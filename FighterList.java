@@ -35,7 +35,6 @@ public class FighterList {
 	public void setFighters(ArrayList<Fighter> fighters) {
 		this.fighters = fighters;
 	}
-
 	
 	
 }

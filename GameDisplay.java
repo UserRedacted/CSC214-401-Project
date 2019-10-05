@@ -16,7 +16,8 @@ public class GameDisplay extends Application {
 	Scene scene;
 	Player p1;
 	Player p2;
-	
+	int turnNum = 1;
+
 	// Main method that loads printers and launches JavaFX window
 	public static void main(String[] args) {
 		launch(args);
@@ -29,7 +30,8 @@ public class GameDisplay extends Application {
 		
 		// Set the initial scene to the main menu
 		scene = new Scene(mainMenu(), 1000, 600);
-			
+		
+		
 		stage.setScene(scene);
 		stage.setTitle("Project 50");
 	
@@ -38,7 +40,7 @@ public class GameDisplay extends Application {
 	}
 	
 	public Group mainMenu() {
-		
+	    
 		Group root = new Group();
 		
 		BorderPane body = new BorderPane();
@@ -54,7 +56,6 @@ public class GameDisplay extends Application {
 		//		BUTTON CONTROLS			
 		Button beginMatch = new Button("Start a Match!");
 		content.getChildren().add(beginMatch);
-		
 		beginMatch.setOnMouseClicked(e -> {
 			scene.setRoot(matchMenu());
 		});
@@ -163,11 +164,14 @@ public class GameDisplay extends Application {
 		
 		
 		p1Fighter.getSelectionModel().selectedItemProperty().addListener(e -> {
-			Fighter selected = p1Fighter.getSelectionModel().getSelectedItem();
-			p1.setFighter(selected);
-			p1FighterStats.setText(selected.printStats());	
-			if(p2.getFighter() != null)
+			try {
+				Fighter selected = p1Fighter.getSelectionModel().getSelectedItem();
+				p1.setFighter(selected);
+				p1FighterStats.setText(selected.printStats());	
 				start.setDisable(false);
+			} catch (NullPointerException e1) {
+				start.setDisable(true);
+			}
 		});
 		
 		return player1;
@@ -196,11 +200,14 @@ public class GameDisplay extends Application {
 		});
 		
 		p2Fighter.getSelectionModel().selectedItemProperty().addListener(e -> {
-			Fighter selected = p2Fighter.getSelectionModel().getSelectedItem();
-			p2.setFighter(selected);
-			p2FighterStats.setText(selected.printStats());
-			if(p1.getFighter() != null)
+			try {	
+				Fighter selected = p2Fighter.getSelectionModel().getSelectedItem();
+				p2.setFighter(selected);
+				p2FighterStats.setText(selected.printStats());
 				start.setDisable(false);
+			} catch (NullPointerException e1) {
+				start.setDisable(true);
+			}
 		});		
 		
 		return player2;
@@ -208,13 +215,37 @@ public class GameDisplay extends Application {
 
 	
 	public Group matchInterface() {
+		
+		
 		Group root = new Group();
 		BorderPane display = new BorderPane();
 		root.getChildren().add(display);
 		VBox p1c = playerControls(p1);
 		VBox p2c = playerControls(p2);
+		Text turnDisplay = new Text("TURN " + turnNum);
+		
+		ListView<String> battleLog = new ListView<>();
+		for(int i = 0; i < p1.getBattleLog().size(); i++) {
+			battleLog.getItems().add(p1.getBattleLog().get(i));
+		}
+		
+		
+		
+		Button advance = new Button("BATTLE!");
+		
+		advance.setOnMouseClicked(e -> {
+			p1.getBattleLog().add(Player.compareAction(p1, p2));
+			turnNum ++;
+			turnDisplay.setText("TURN " + turnNum);
+			scene.setRoot(matchInterface());
+		});
+		
+		display.setTop(turnDisplay);
+		display.setCenter(battleLog);
 		display.setLeft(p1c);
 		display.setRight(p2c);
+		display.setBottom(advance);
+
 		return root;
 	}
 	
@@ -234,19 +265,22 @@ public class GameDisplay extends Application {
 		attack.setOnMouseClicked(e -> {
 			p.getFighter().setChosenAction(0);
 			playerPanel.getChildren().clear();
+			p.setHasActed(true);
 		});
 		grab.setOnMouseClicked(e -> {
 			p.getFighter().setChosenAction(1);
 			playerPanel.getChildren().clear();
+			p.setHasActed(true);
 		});
 		counter.setOnMouseClicked(e -> {
 			p.getFighter().setChosenAction(2);
 			playerPanel.getChildren().clear();
-
+			p.setHasActed(true);
 		});
 		deflect.setOnMouseClicked(e -> {
 			p.getFighter().setChosenAction(3);
 			playerPanel.getChildren().clear();
+			p.setHasActed(true);
 		});
 		
 		

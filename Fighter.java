@@ -38,6 +38,19 @@ public class Fighter {
 		return name;
 	}
 
+	public String actionToString() {
+		switch(chosenAction) {
+		case 0:
+			return "attack";
+		case 1:
+			return "grab";
+		case 2:
+			return "counter";
+		case 3:
+			return "deflect";
+		}
+		return null;
+	}
 
 
 	public int getChosenAction() {
