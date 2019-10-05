@@ -19,12 +19,15 @@ public class FighterList {
 		Fighter rocknald = new Fighter("Rocknald", 350, 80, 40, 60, 40);
 		fighters.add(rocknald);
 		
-		Fighter walbow = new Fighter("Walbow", 210, 90, 30, 80, 25);
+		Fighter walbow = new Fighter("Walbow", 210, 90, 30, 100, 25);
 		fighters.add(walbow);
 
 		Fighter kurt = new Fighter("Kurt", 290, 50, 40, 100, 60);
 		fighters.add(kurt);
 
+		Fighter zen = new Fighter("Zen", 300, 40, 40, 70, 120);
+		fighters.add(zen);
+		
 		
 	}
 	

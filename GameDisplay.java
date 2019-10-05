@@ -14,10 +14,13 @@ public class GameDisplay extends Application {
 
 	
 	Scene scene;
+	// Placeholder Player classes for whoever is fighting in a match
 	Player p1;
 	Player p2;
+	// Global turn number of a match
 	int turnNum = 1;
-
+	boolean battleFinished = false;
+	
 	// Main method that loads printers and launches JavaFX window
 	public static void main(String[] args) {
 		launch(args);
@@ -30,7 +33,7 @@ public class GameDisplay extends Application {
 		
 		// Set the initial scene to the main menu
 		scene = new Scene(mainMenu(), 1000, 600);
-		
+		scene.getStylesheets().add("customStyle.css");
 		
 		stage.setScene(scene);
 		stage.setTitle("Project 50");
@@ -41,6 +44,7 @@ public class GameDisplay extends Application {
 	
 	public Group mainMenu() {
 	    
+		
 		Group root = new Group();
 		
 		BorderPane body = new BorderPane();
@@ -124,6 +128,7 @@ public class GameDisplay extends Application {
 		
 		startGame.setOnMouseClicked(e -> {
 			scene.setRoot(matchInterface());
+			battleFinished = false;
 		});	
 		
 		// Left Panel
@@ -141,6 +146,9 @@ public class GameDisplay extends Application {
 		return root;
 	}
 
+	
+	//TODO: Fix logic for disabling the START GAME button (not working properly)
+	// Left and Right pieces of the match menu. Left panel is Player 1's interface, right panel is Player 2's interface
 	public VBox matchMenuLeft(ListView<Fighter> p1Fighter, Button start) {
 		VBox player1 = new VBox();
 		ChoiceBox<Player> p1Type = new ChoiceBox<>();
@@ -213,31 +221,64 @@ public class GameDisplay extends Application {
 		return player2;
 	}
 
-	
 	public Group matchInterface() {
-		
 		
 		Group root = new Group();
 		BorderPane display = new BorderPane();
 		root.getChildren().add(display);
-		VBox p1c = playerControls(p1);
-		VBox p2c = playerControls(p2);
+		
+		Button advance = new Button("Continue");
+		if(p1.isHasActed() && p2.isHasActed())
+			advance.setDisable(false);
+		else
+			advance.setDisable(true);
+
+		
+		VBox p1c = playerControls(p1, advance);
+		VBox p2c = playerControls(p2, advance);
 		Text turnDisplay = new Text("TURN " + turnNum);
 		
 		ListView<String> battleLog = new ListView<>();
-		for(int i = 0; i < p1.getBattleLog().size(); i++) {
-			battleLog.getItems().add(p1.getBattleLog().get(i));
+		try {
+			for(int i = 0; i < p1.getCurrentBattle().getBattleTurns().size(); i++) {
+				battleLog.getItems().add(p1.getCurrentBattle().getBattleTurns().get(i));
+			}
+		} catch (NullPointerException e) {
+			//Nothing needs to be added to the in-game battle log
 		}
-		
-		
-		
-		Button advance = new Button("BATTLE!");
+
 		
 		advance.setOnMouseClicked(e -> {
-			p1.getBattleLog().add(Player.compareAction(p1, p2));
+			p1.getCurrentBattle().getBattleTurns().add(Fighter.compareAction(p1.getFighter(), p2.getFighter()));
 			turnNum ++;
 			turnDisplay.setText("TURN " + turnNum);
-			scene.setRoot(matchInterface());
+			
+			
+			// Testing if the battle is over and writing to battle logs
+			if(!battleFinished) {
+				scene.setRoot(matchInterface());
+			}
+			else {
+				scene.setRoot(mainMenu());
+				p1.setNumBattles(p1.getNumBattles()+1);
+				p2.setNumBattles(p2.getNumBattles()+1);
+				p2.setCurrentBattle(p1.getCurrentBattle());
+				p1.getCurrentBattle().sendToFile(p1);
+				p2.getCurrentBattle().sendToFile(p2);
+			}
+			
+			if(p1.getFighter().getHp() <= 0 || p2.getFighter().getHp() <= 0) {
+				if(p1.getFighter().getHp() > 0) {
+					p1.getCurrentBattle().getBattleTurns().add(p1.getName() + " WINS THE BATTLE!");
+					p2.getFighter().setHp(0);
+				}
+				else {
+					p2.getCurrentBattle().getBattleTurns().add(p2.getName() + " WINS THE BATTLE!");
+					p1.getFighter().setHp(0);
+				}
+				battleFinished = true;
+			}
+
 		});
 		
 		display.setTop(turnDisplay);
@@ -250,13 +291,18 @@ public class GameDisplay extends Application {
 	}
 	
 	// Panel in game match for player control scheme
-	public VBox playerControls(Player p) {
+	public VBox playerControls(Player p, Button advance) {
 		VBox playerPanel = new VBox();
+		
+		String fighterStats = p.getFighter().getName() + "\nHP: " + p.getFighter().getHp();
+		
+		Text fighterDisplay = new Text(fighterStats);
 		
 		Button attack = new Button("Attack (" + p.getFighter().getAttack() + ")");
 		Button grab = new Button("Grab (" + p.getFighter().getGrab() + ")");
 		Button counter = new Button("Counter (" + p.getFighter().getCounter() + ")");
 		Button deflect = new Button("Deflect (" + p.getFighter().getDeflect() + "%)");
+		playerPanel.getChildren().add(fighterDisplay);
 		playerPanel.getChildren().add(attack);
 		playerPanel.getChildren().add(grab);
 		playerPanel.getChildren().add(counter);
@@ -266,21 +312,29 @@ public class GameDisplay extends Application {
 			p.getFighter().setChosenAction(0);
 			playerPanel.getChildren().clear();
 			p.setHasActed(true);
+			if(p1.isHasActed() && p2.isHasActed())
+				advance.setDisable(false);
 		});
 		grab.setOnMouseClicked(e -> {
 			p.getFighter().setChosenAction(1);
 			playerPanel.getChildren().clear();
 			p.setHasActed(true);
+			if(p1.isHasActed() && p2.isHasActed())
+				advance.setDisable(false);
 		});
 		counter.setOnMouseClicked(e -> {
 			p.getFighter().setChosenAction(2);
 			playerPanel.getChildren().clear();
 			p.setHasActed(true);
+			if(p1.isHasActed() && p2.isHasActed())
+				advance.setDisable(false);
 		});
 		deflect.setOnMouseClicked(e -> {
 			p.getFighter().setChosenAction(3);
 			playerPanel.getChildren().clear();
 			p.setHasActed(true);
+			if(p1.isHasActed() && p2.isHasActed())
+				advance.setDisable(false);
 		});
 		
 		
