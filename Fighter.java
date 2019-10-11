@@ -21,7 +21,6 @@ public class Fighter {
 	
 	public String printStats() {
 		String output = "";
-		output += "Name: " + name;
 		output += "\nHP: " + hp;
 		output += "\nAttack: " + attack;
 		output += "\nGrab: " + grab;
@@ -93,15 +92,18 @@ public class Fighter {
 		this.hp = hp;
 	}
 
-	public static String printActions(Fighter loser, Fighter winner) {
-		return loser.name + " " + loser.actionToString() + "s and " + winner.name + " " + winner.actionToString() + "s!\n";
+	// Helper method for displaying actions taken during combat
+	public static String printActions(Fighter a, Fighter b) {
+		return a.name + " " + a.actionToString() + "s and " + b.name + " " + b.actionToString() + "s!\n";
 	}
 	
-	// A is the winner of the fight, B is the loser
-	public static String printResults(Fighter a, Fighter b, int damage) {
-		return a.name + " takes " + damage + "dmg from " + b.name + "'s " + b.actionToString() +"\n";
+	// Helper method for printing results of a turn of combat
+	public static String printResults(Fighter loser, Fighter winner, int damage) {
+		return loser.name + " takes " + damage + "dmg from " + winner.name + "'s " + winner.actionToString() +"\n";
 	}	
 	
+	// The brains of the combat system. Determines the winner/loser of a pair of actions
+	//TODO: Figure out why the game clones Fighter b's moves if a and b are the same Fighter
 	public static String compareAction(Fighter a, Fighter b) {
 		StringBuilder output = new StringBuilder();
 		int damage = 0;

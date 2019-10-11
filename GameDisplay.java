@@ -14,20 +14,24 @@ public class GameDisplay extends Application {
 
 	
 	Scene scene;
-	// Placeholder Player classes for whoever is fighting in a match
+	
+	// Placeholder Player objects for whoever is fighting in a match
 	Player p1;
 	Player p2;
+	
 	// Global turn number of a match
 	int turnNum = 1;
-	boolean battleFinished = false;
 	
+	boolean battleFinished = false;
+	boolean readyToAdvance = false; // Once the match is over, determines whether players can return to the main menu
 	// Main method that loads printers and launches JavaFX window
 	public static void main(String[] args) {
 		launch(args);
 	}
+	
+	
+	
 	// JavaFX Window Runner
-	
-	
 	@Override
 	public void start(Stage stage)  {
 		
@@ -42,6 +46,8 @@ public class GameDisplay extends Application {
 
 	}
 	
+	
+	// Function for controlling main menu interface
 	public Group mainMenu() {
 	    
 		
@@ -64,16 +70,20 @@ public class GameDisplay extends Application {
 			scene.setRoot(matchMenu());
 		});
 				
-		Button loadUser = new Button("Load User");
+		Button loadUser = new Button("Load/Create UserName");
 		content.getChildren().add(loadUser);
-
 		
+		
+		Button playerInfo = new Button("View Player Information");
+		content.getChildren().add(playerInfo);	
 				
 		root.getChildren().add(body);
 		
 		return root;
 	}
 	
+	
+	// Battle setup menu interface
 	public Group matchMenu() {
 
 		Group root = new Group();
@@ -126,16 +136,21 @@ public class GameDisplay extends Application {
 			scene.setRoot(mainMenu());
 		});	
 		
+		// Event Listener for Start Game Button. Will change scene root to the match interface
+		// and clear all necessary match conditions
 		startGame.setOnMouseClicked(e -> {
 			scene.setRoot(matchInterface());
 			battleFinished = false;
+			readyToAdvance = false;
+			p1.setHasActed(false);
+			p2.setHasActed(false);
 		});	
 		
 		// Left Panel
-		VBox player1 = matchMenuLeft(p1Fighter, startGame);
+		VBox player1 = matchPlayerPanel(p1Fighter, startGame, true);
 		
 		// Right Panel
-		VBox player2 = matchMenuRight(p2Fighter, startGame);
+		VBox player2 = matchPlayerPanel(p2Fighter, startGame, false);
 		
 		
 		
@@ -147,95 +162,92 @@ public class GameDisplay extends Application {
 	}
 
 	
-	//TODO: Fix logic for disabling the START GAME button (not working properly)
-	// Left and Right pieces of the match menu. Left panel is Player 1's interface, right panel is Player 2's interface
-	public VBox matchMenuLeft(ListView<Fighter> p1Fighter, Button start) {
-		VBox player1 = new VBox();
-		ChoiceBox<Player> p1Type = new ChoiceBox<>();
-		player1.getChildren().add(p1Type);
+	// Panel for controlling player setup for a match
+	public VBox matchPlayerPanel(ListView<Fighter> fighterChoice, Button start, boolean isLeftPanel) {
+				
+		VBox playerVBox = new VBox();
 		
-		p1Type.getItems().add(new Player("Player 1", true));
-		p1Type.getItems().add(new Player("AI Jerry", false));
+		// ChoiceBox for choosing a player profile from a list of User Names and public profiles
+		ChoiceBox<Player> playerProfile = new ChoiceBox<>();
+		playerVBox.getChildren().add(playerProfile);
+		
+		//Set up the ChoiceBox to be filled with player profiles
+		PlayerList playerList = new PlayerList();
+		
+		for(Player p: playerList.getPlayers()) {
+			playerProfile.getItems().add(p);
+		}
 			
-		Text p1FighterHeader = new Text("FIGHTER STATS");
-		player1.getChildren().add(p1FighterHeader);
+		// Displaying the details for the selected fighter in the playerVBox
+		Text fighterHeader = new Text("FIGHTER STATS");
+		playerVBox.getChildren().add(fighterHeader);
 		
-		Text p1FighterStats = new Text();
-		player1.getChildren().add(p1FighterStats);
-		
-		
-		p1Type.getSelectionModel().selectedItemProperty().addListener(e -> {
-			p1Fighter.setDisable(false);
-			Player selected = p1Type.getSelectionModel().getSelectedItem();
-			p1 = selected;
-		});
-		
-		
-		p1Fighter.getSelectionModel().selectedItemProperty().addListener(e -> {
-			try {
-				Fighter selected = p1Fighter.getSelectionModel().getSelectedItem();
-				p1.setFighter(selected);
-				p1FighterStats.setText(selected.printStats());	
-				start.setDisable(false);
-			} catch (NullPointerException e1) {
-				start.setDisable(true);
+		Text fighterStats = new Text();
+		playerVBox.getChildren().add(fighterStats);
+
+		// Listener for ChoiceBox of Players. Enables choosing a fighter and sets the player based on whether the left or right panel is being created
+		playerProfile.getSelectionModel().selectedItemProperty().addListener(e -> {
+			fighterChoice.setDisable(false);
+			if(isLeftPanel) {
+				p1 = playerProfile.getSelectionModel().getSelectedItem();
+			} else {
+				p2 = playerProfile.getSelectionModel().getSelectedItem();
 			}
+			checkSetup(start);
 		});
 		
-		return player1;
+		//Event listener for the a player's ListView
+		fighterChoice.getSelectionModel().selectedItemProperty().addListener(e -> {
+			Fighter selected = fighterChoice.getSelectionModel().getSelectedItem();
+			
+			if(isLeftPanel) {
+				p1.setFighter(fighterChoice.getSelectionModel().getSelectedItem());
+			} else {
+				p2.setFighter(fighterChoice.getSelectionModel().getSelectedItem());
+			}
+			fighterStats.setText(selected.printStats());	
+			checkSetup(start);
+		});
+		
+		
+		
+		return playerVBox;
 	}
 
-	public VBox matchMenuRight(ListView<Fighter> p2Fighter, Button start) {
-		VBox player2 = new VBox();
-		
-		ChoiceBox<Player> p2Type = new ChoiceBox<>();
-		player2.getChildren().add(p2Type);
-		
-		p2Type.getItems().add(new Player("Player 2", true));
-		p2Type.getItems().add(new Player("AI Carl", false));
-		
-		
-		Text p2FighterHeader = new Text("FIGHTER STATS");
-		player2.getChildren().add(p2FighterHeader);
-		
-		Text p2FighterStats = new Text();
-		player2.getChildren().add(p2FighterStats);
-		
-		p2Type.getSelectionModel().selectedItemProperty().addListener(e -> {
-			p2Fighter.setDisable(false);
-			Player selected = p2Type.getSelectionModel().getSelectedItem();
-			p2 = selected;
-		});
-		
-		p2Fighter.getSelectionModel().selectedItemProperty().addListener(e -> {
-			try {	
-				Fighter selected = p2Fighter.getSelectionModel().getSelectedItem();
-				p2.setFighter(selected);
-				p2FighterStats.setText(selected.printStats());
-				start.setDisable(false);
-			} catch (NullPointerException e1) {
+	// Helper method for determining if the match setup is ready to progress;
+	// Enables the start button if the check is good
+	// Called when CheckBox and ListView of Fighters are updated
+	private void checkSetup(Button start) {
+		try {
+			if(p1.getName().equals(p2.getName()))
 				start.setDisable(true);
-			}
-		});		
-		
-		return player2;
-	}
+			else if(p1.getFighter() != null && p2.getFighter() != null) {
+				start.setDisable(false);
+			}	
+		} catch (NullPointerException e) {
+			start.setDisable(true);
+		}
 
+	}
+		
+		
+// Main interface for the turn of a match. Called recursively until
+	// match is over
 	public Group matchInterface() {
-		
+
 		Group root = new Group();
 		BorderPane display = new BorderPane();
 		root.getChildren().add(display);
 		
 		Button advance = new Button("Continue");
-		if(p1.isHasActed() && p2.isHasActed())
+		if(battleFinished)
 			advance.setDisable(false);
 		else
 			advance.setDisable(true);
 
-		
 		VBox p1c = playerControls(p1, advance);
 		VBox p2c = playerControls(p2, advance);
+		
 		Text turnDisplay = new Text("TURN " + turnNum);
 		
 		ListView<String> battleLog = new ListView<>();
@@ -247,38 +259,37 @@ public class GameDisplay extends Application {
 			//Nothing needs to be added to the in-game battle log
 		}
 
-		
+		// Event listener for round advancing
 		advance.setOnMouseClicked(e -> {
-			p1.getCurrentBattle().getBattleTurns().add(Fighter.compareAction(p1.getFighter(), p2.getFighter()));
-			turnNum ++;
-			turnDisplay.setText("TURN " + turnNum);
 			
+			p1.setHasActed(false);
+			p2.setHasActed(false);
 			
-			// Testing if the battle is over and writing to battle logs
 			if(!battleFinished) {
-				scene.setRoot(matchInterface());
-			}
-			else {
-				scene.setRoot(mainMenu());
-				p1.setNumBattles(p1.getNumBattles()+1);
-				p2.setNumBattles(p2.getNumBattles()+1);
-				p2.setCurrentBattle(p1.getCurrentBattle());
-				p1.getCurrentBattle().sendToFile(p1);
-				p2.getCurrentBattle().sendToFile(p2);
-			}
-			
-			if(p1.getFighter().getHp() <= 0 || p2.getFighter().getHp() <= 0) {
-				if(p1.getFighter().getHp() > 0) {
-					p1.getCurrentBattle().getBattleTurns().add(p1.getName() + " WINS THE BATTLE!");
-					p2.getFighter().setHp(0);
-				}
-				else {
-					p2.getCurrentBattle().getBattleTurns().add(p2.getName() + " WINS THE BATTLE!");
-					p1.getFighter().setHp(0);
-				}
-				battleFinished = true;
+				String hmm = Fighter.compareAction(p1.getFighter(), p2.getFighter());
+				System.out.println(hmm);
+				p1.getCurrentBattle().getBattleTurns().add(hmm);
+				turnNum ++;
+				turnDisplay.setText("TURN " + turnNum);
 			}
 
+			
+			if(battleFinished){
+				if(readyToAdvance) {
+					scene.setRoot(mainMenu());
+				} else {
+					p1.setNumBattles(p1.getNumBattles()+1);
+					p2.setNumBattles(p2.getNumBattles()+1);
+					p2.setCurrentBattle(p1.getCurrentBattle());
+					p1.getCurrentBattle().sendToFile(p1);
+					p2.getCurrentBattle().sendToFile(p2);
+					readyToAdvance = true;
+				}
+			} else {
+				checkIfFinished();
+				scene.setRoot(matchInterface());
+			}
+			
 		});
 		
 		display.setTop(turnDisplay);
@@ -289,8 +300,27 @@ public class GameDisplay extends Application {
 
 		return root;
 	}
+
+	// Helper method for match interface. Compares health of
+	// fighters to see if the match is over
+	private void checkIfFinished() {
+		if(p1.getFighter().getHp() <= 0 || p2.getFighter().getHp() <= 0) {
+			battleFinished = true;
+
+			if(p1.getFighter().getHp() > 0) {
+				p1.getCurrentBattle().getBattleTurns().add(p1.getName() + " WINS THE BATTLE!");
+				p2.getFighter().setHp(0);
+			}
+			else {
+				p2.getCurrentBattle().getBattleTurns().add(p2.getName() + " WINS THE BATTLE!");
+				p1.getFighter().setHp(0);
+			}
+		}		
+	}
 	
-	// Panel in game match for player control scheme
+	
+	// Panel in game match for player control scheme. 
+	//TODO: Add AI functionality through separate method or some other incorporation
 	public VBox playerControls(Player p, Button advance) {
 		VBox playerPanel = new VBox();
 		
@@ -302,44 +332,79 @@ public class GameDisplay extends Application {
 		Button grab = new Button("Grab (" + p.getFighter().getGrab() + ")");
 		Button counter = new Button("Counter (" + p.getFighter().getCounter() + ")");
 		Button deflect = new Button("Deflect (" + p.getFighter().getDeflect() + "%)");
+		
 		playerPanel.getChildren().add(fighterDisplay);
 		playerPanel.getChildren().add(attack);
 		playerPanel.getChildren().add(grab);
 		playerPanel.getChildren().add(counter);
 		playerPanel.getChildren().add(deflect);
 		
+		
+		if(battleFinished) {
+			attack.setDisable(true);
+			grab.setDisable(true);
+			counter.setDisable(true);
+			deflect.setDisable(true);
+		} else {
+			attack.setDisable(false);
+			grab.setDisable(false);
+			counter.setDisable(false);
+			deflect.setDisable(false);
+		}
+		
 		attack.setOnMouseClicked(e -> {
 			p.getFighter().setChosenAction(0);
-			playerPanel.getChildren().clear();
 			p.setHasActed(true);
-			if(p1.isHasActed() && p2.isHasActed())
-				advance.setDisable(false);
+			attack.setDisable(true);
+			grab.setDisable(true);
+			counter.setDisable(true);
+			deflect.setDisable(true);
+			checkActions(advance);
+			
 		});
 		grab.setOnMouseClicked(e -> {
 			p.getFighter().setChosenAction(1);
-			playerPanel.getChildren().clear();
 			p.setHasActed(true);
-			if(p1.isHasActed() && p2.isHasActed())
-				advance.setDisable(false);
+			attack.setDisable(true);
+			grab.setDisable(true);
+			counter.setDisable(true);
+			deflect.setDisable(true);
+			checkActions(advance);
+
 		});
 		counter.setOnMouseClicked(e -> {
 			p.getFighter().setChosenAction(2);
-			playerPanel.getChildren().clear();
 			p.setHasActed(true);
-			if(p1.isHasActed() && p2.isHasActed())
-				advance.setDisable(false);
+			attack.setDisable(true);
+			grab.setDisable(true);
+			counter.setDisable(true);
+			deflect.setDisable(true);
+			checkActions(advance);
+
 		});
 		deflect.setOnMouseClicked(e -> {
 			p.getFighter().setChosenAction(3);
-			playerPanel.getChildren().clear();
 			p.setHasActed(true);
-			if(p1.isHasActed() && p2.isHasActed())
-				advance.setDisable(false);
+			attack.setDisable(true);
+			grab.setDisable(true);
+			counter.setDisable(true);
+			deflect.setDisable(true);
+			checkActions(advance);
+
 		});
 		
 		
 		return playerPanel;
 	}
+	
+	//Helper method for player controls; Enables/disables "Continue"
+	// button based on whether both players have acted
+	public void checkActions(Button advance) {
+		if(p1.hasActed() && p2.hasActed() && !battleFinished)
+			advance.setDisable(false);
+		else
+			advance.setDisable(true);
+	}	
 	
 	
 }

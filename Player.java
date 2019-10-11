@@ -7,15 +7,16 @@ public class Player {
 	private Fighter fighter;
 	private boolean hasActed = false;
 
-	private int numBattles = 0;
+	private int numBattles;
 	private BattleLog currentBattle = new BattleLog();
 	
 	
 	public Player(String name, boolean isHuman) {
 		this.name = name;
 		this.isHuman = isHuman;
+		numBattles = 0;
+		hasActed = false;
 	}
-
 	
 	
 	@Override
@@ -42,7 +43,7 @@ public class Player {
 	public void setFighter(Fighter fighter) {
 		this.fighter = fighter;
 	}
-	public boolean isHasActed() {
+	public boolean hasActed() {
 		return hasActed;
 	}
 	public void setHasActed(boolean hasActed) {
@@ -59,6 +60,19 @@ public class Player {
 	}
 	public void setNumBattles(int numbattles) {
 		this.numBattles = numbattles;
+	}
+
+
+	public void importPlayer(Player selected) {
+		try {
+			isHuman = selected.isHuman();
+			name = selected.getName();
+			hasActed = selected.hasActed();
+			numBattles = selected.getNumBattles();	
+		} catch (NullPointerException e) {
+			//idk
+		}
+
 	}
 	
 
