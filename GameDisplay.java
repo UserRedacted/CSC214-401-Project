@@ -1,12 +1,20 @@
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ListView;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
@@ -15,6 +23,10 @@ public class GameDisplay extends Application {
 	
 	Scene scene;
 	
+	// Objects for playing sounds through Javafx
+	
+	static MediaPlayer musicPlayer;
+	static MediaPlayer soundPlayer;
 	// Placeholder Player objects for whoever is fighting in a match
 	Player p1;
 	Player p2;
@@ -35,6 +47,14 @@ public class GameDisplay extends Application {
 	@Override
 	public void start(Stage stage)  {
 		
+		
+		// NOTE: This can be used as a template for playing music and sound effects
+		File song = new File("resources\\music\\Theme.wav");
+		Media media = new Media(song.toURI().toString()); // Media class requires a URI file path. This allows it to work on any computer.
+		musicPlayer = new MediaPlayer(media);
+		musicPlayer.setAutoPlay(true);
+		musicPlayer.setCycleCount(1000);
+		
 		// Set the initial scene to the main menu
 		scene = new Scene(mainMenu(), 1000, 600);
 		scene.getStylesheets().add("customStyle.css");
@@ -49,35 +69,47 @@ public class GameDisplay extends Application {
 	
 	// Function for controlling main menu interface
 	public Group mainMenu() {
-	    
 		
+		int buttonWidth = 300; // int for controlling width of all buttons
+
 		Group root = new Group();
 		
-		BorderPane body = new BorderPane();
-
 		VBox content = new VBox();
-		body.setCenter(content);
-	
-		Text title = new Text("PROJECT 50");
-		title.setStyle("-fx-font: 24 arial;");
-		content.getChildren().add(title);
+		content.setSpacing(5);
+		
+		// Image Experimentation
+		FileInputStream input;
+		try {
+			input = new FileInputStream(new File("resources\\images\\project50.png"));
+			Image image = new Image(input);
+			ImageView titleHolder = new ImageView();
+			titleHolder.setImage(image);
+			
+			content.getChildren().add(titleHolder);
+		} catch (FileNotFoundException e1) {
+			e1.printStackTrace();
+		}
 		
 		
 		//		BUTTON CONTROLS			
 		Button beginMatch = new Button("Start a Match!");
+		beginMatch.setMaxWidth(buttonWidth);		
 		content.getChildren().add(beginMatch);
+		
 		beginMatch.setOnMouseClicked(e -> {
 			scene.setRoot(matchMenu());
 		});
 				
 		Button loadUser = new Button("Load/Create UserName");
+		loadUser.setMaxWidth(buttonWidth);
 		content.getChildren().add(loadUser);
 		
 		
 		Button playerInfo = new Button("View Player Information");
+		playerInfo.setMaxWidth(buttonWidth);
 		content.getChildren().add(playerInfo);	
-				
-		root.getChildren().add(body);
+		
+		root.getChildren().add(content);
 		
 		return root;
 	}
@@ -163,8 +195,8 @@ public class GameDisplay extends Application {
 
 	
 	// Panel for controlling player setup for a match
-	public VBox matchPlayerPanel(ListView<Fighter> fighterChoice, Button start, boolean isLeftPanel) {
-				
+	public VBox matchPlayerPanel(ListView<Fighter> fighterChoice, Button start, boolean isLeftPanel) {		
+		
 		VBox playerVBox = new VBox();
 		
 		// ChoiceBox for choosing a player profile from a list of User Names and public profiles
@@ -184,6 +216,13 @@ public class GameDisplay extends Application {
 		
 		Text fighterStats = new Text();
 		playerVBox.getChildren().add(fighterStats);
+		
+		
+		//TODO: Add code for sprites to display potentially?
+		// Setting up an ImageView for potentially displaying GIFs of sprites
+		ImageView fighterSprite = new ImageView();
+		playerVBox.getChildren().add(fighterSprite); // Container in place; content would be determined by ListView selection
+		
 
 		// Listener for ChoiceBox of Players. Enables choosing a fighter and sets the player based on whether the left or right panel is being created
 		playerProfile.getSelectionModel().selectedItemProperty().addListener(e -> {
@@ -231,12 +270,12 @@ public class GameDisplay extends Application {
 	}
 		
 		
-// Main interface for the turn of a match. Called recursively until
+	// Main interface for the turn of a match. Called recursively until
 	// match is over
 	public Group matchInterface() {
-
 		Group root = new Group();
 		BorderPane display = new BorderPane();
+
 		root.getChildren().add(display);
 		
 		Button advance = new Button("Continue");
@@ -251,6 +290,7 @@ public class GameDisplay extends Application {
 		Text turnDisplay = new Text("TURN " + turnNum);
 		
 		ListView<String> battleLog = new ListView<>();
+		battleLog.setMaxWidth(600);
 		try {
 			for(int i = 0; i < p1.getCurrentBattle().getBattleTurns().size(); i++) {
 				battleLog.getItems().add(p1.getCurrentBattle().getBattleTurns().get(i));
@@ -266,9 +306,8 @@ public class GameDisplay extends Application {
 			p2.setHasActed(false);
 			
 			if(!battleFinished) {
-				String hmm = Fighter.compareAction(p1.getFighter(), p2.getFighter());
-				System.out.println(hmm);
-				p1.getCurrentBattle().getBattleTurns().add(hmm);
+				String turnText = Fighter.compareAction(p1.getFighter(), p2.getFighter());
+				p1.getCurrentBattle().getBattleTurns().add(turnText);
 				turnNum ++;
 				turnDisplay.setText("TURN " + turnNum);
 			}
@@ -322,7 +361,12 @@ public class GameDisplay extends Application {
 	// Panel in game match for player control scheme. 
 	//TODO: Add AI functionality through separate method or some other incorporation
 	public VBox playerControls(Player p, Button advance) {
+		
+		int buttonWidth = 200;
+
+		
 		VBox playerPanel = new VBox();
+		playerPanel.setSpacing(5);
 		
 		String fighterStats = p.getFighter().getName() + "\nHP: " + p.getFighter().getHp();
 		
@@ -333,6 +377,11 @@ public class GameDisplay extends Application {
 		Button counter = new Button("Counter (" + p.getFighter().getCounter() + ")");
 		Button deflect = new Button("Deflect (" + p.getFighter().getDeflect() + "%)");
 		
+		attack.setMaxWidth(buttonWidth);
+		grab.setMaxWidth(buttonWidth);
+		counter.setMaxWidth(buttonWidth);
+		deflect.setMaxWidth(buttonWidth);
+
 		playerPanel.getChildren().add(fighterDisplay);
 		playerPanel.getChildren().add(attack);
 		playerPanel.getChildren().add(grab);
