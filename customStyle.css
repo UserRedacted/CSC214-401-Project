@@ -1,4 +1,10 @@
-.button{
+
+.text {   
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+}
+
+.button {
     -fx-background-color: 
         linear-gradient(#ffd65b, #e68400),
         linear-gradient(#ffef84, #f2ba44),
@@ -11,12 +17,4 @@
     -fx-font-weight: bold;
     -fx-font-size: 24px;
     -fx-padding: 25 20 25 20;
-}
-
-
-
-.text{
-    -fx-text-fill: #654b00;
-    -fx-font-weight: bold;
-    -fx-font-size: 18px;
 }

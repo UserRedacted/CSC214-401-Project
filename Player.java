@@ -62,22 +62,6 @@ public class Player {
 		this.numBattles = numbattles;
 	}
 
-
-	public void importPlayer(Player selected) {
-		try {
-			isHuman = selected.isHuman();
-			name = selected.getName();
-			hasActed = selected.hasActed();
-			numBattles = selected.getNumBattles();	
-		} catch (NullPointerException e) {
-			//idk
-		}
-
-	}
-	
-
-
-	
 }
 
 

@@ -3,11 +3,12 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
 import javafx.application.Application;
-import javafx.scene.Group;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
@@ -23,10 +24,10 @@ public class GameDisplay extends Application {
 	
 	Scene scene;
 	
-	// Objects for playing sounds through Javafx
-	
+	// Objects for playing sounds through JavaFX
 	static MediaPlayer musicPlayer;
 	static MediaPlayer soundPlayer;
+	
 	// Placeholder Player objects for whoever is fighting in a match
 	Player p1;
 	Player p2;
@@ -34,14 +35,13 @@ public class GameDisplay extends Application {
 	// Global turn number of a match
 	int turnNum = 1;
 	
-	boolean battleFinished = false;
+	boolean battleFinished = false; // True when one player's fighter has <= 0 HP
 	boolean readyToAdvance = false; // Once the match is over, determines whether players can return to the main menu
+	
 	// Main method that loads printers and launches JavaFX window
 	public static void main(String[] args) {
 		launch(args);
 	}
-	
-	
 	
 	// JavaFX Window Runner
 	@Override
@@ -56,12 +56,24 @@ public class GameDisplay extends Application {
 		musicPlayer.setCycleCount(1000);
 		
 		// Set the initial scene to the main menu
-		scene = new Scene(mainMenu(), 1000, 600);
+		scene = new Scene(mainMenu(), 1000, 650);
 		scene.getStylesheets().add("customStyle.css");
 		
 		stage.setScene(scene);
 		stage.setTitle("Project 50");
-	
+		
+		
+		// Setting up application icon
+		FileInputStream input;
+		try {
+			input = new FileInputStream(new File("resources\\images\\p50.png"));
+			Image image = new Image(input);
+			stage.getIcons().add(image);
+		} catch (FileNotFoundException e1) {
+			e1.printStackTrace();
+		}
+		
+		
 		stage.show();
 
 	}
@@ -70,12 +82,14 @@ public class GameDisplay extends Application {
 	// Function for controlling main menu interface
 	public Group mainMenu() {
 		
-		int buttonWidth = 300; // int for controlling width of all buttons
+		int buttonWidth = 500; // int for controlling width of all buttons
 
-		Group root = new Group();
-		
+		BorderPane frame = new BorderPane();
 		VBox content = new VBox();
+		frame.setPadding(new Insets(0, 50, 0, 50));
+		frame.setCenter(content);
 		content.setSpacing(5);
+		content.setPadding(new Insets(10, 10, 10, 10));
 		
 		// Image Experimentation
 		FileInputStream input;
@@ -84,7 +98,6 @@ public class GameDisplay extends Application {
 			Image image = new Image(input);
 			ImageView titleHolder = new ImageView();
 			titleHolder.setImage(image);
-			
 			content.getChildren().add(titleHolder);
 		} catch (FileNotFoundException e1) {
 			e1.printStackTrace();
@@ -97,35 +110,115 @@ public class GameDisplay extends Application {
 		content.getChildren().add(beginMatch);
 		
 		beginMatch.setOnMouseClicked(e -> {
-			scene.setRoot(matchMenu());
+			scene.setRoot(matchSetupMenu());
 		});
 				
 		Button loadUser = new Button("Load/Create UserName");
 		loadUser.setMaxWidth(buttonWidth);
 		content.getChildren().add(loadUser);
 		
+		loadUser.setOnMouseClicked(e -> {
+			scene.setRoot(loginMenu());
+		});
+			
 		
 		Button playerInfo = new Button("View Player Information");
 		playerInfo.setMaxWidth(buttonWidth);
 		content.getChildren().add(playerInfo);	
 		
-		root.getChildren().add(content);
 		
+		return frame;
+	}
+	
+	
+	// Menu for users to log in, out, create user profiles, etc.
+	public BorderPane loginMenu() {
+		
+		int buttonWidth = 300;
+		
+		
+		BorderPane root = new BorderPane();
+		// Panel for TextFields
+		VBox dataEntry = new VBox();
+		
+		//Logging in
+		Text loginHeader = new Text("LOG IN");
+		
+		TextField userLogin = new TextField();
+		userLogin.setPromptText("Enter UserName");
+		
+		TextField userPass = new TextField();
+		userPass.setPromptText("Enter Password");
+		
+		//Logging out
+		Text loguoutHeader = new Text("LOG OUT");
+		
+		TextField userLogout = new TextField();
+		userLogout.setPromptText("Enter UserName");
+		
+		// Creating a new profile
+		Text creationHeader = new Text("CREATE A NEW USER");
+		
+		TextField userCreate = new TextField();
+		userCreate.setPromptText("Enter a UserName");
+		
+		TextField userPassSetup = new TextField();
+		userPassSetup.setPromptText("Enter a Password");
+		
+		TextField userPassConfirm = new TextField();
+		userPassConfirm.setPromptText("Confirm Password");
+		
+		dataEntry.getChildren().add(loginHeader);
+		dataEntry.getChildren().add(userLogin);
+		dataEntry.getChildren().add(userPass);
+		dataEntry.getChildren().add(loguoutHeader);
+		dataEntry.getChildren().add(userLogout);
+		dataEntry.getChildren().add(creationHeader);
+		dataEntry.getChildren().add(userCreate);
+		dataEntry.getChildren().add(userPassSetup);
+		dataEntry.getChildren().add(userPassConfirm);
+
+		//Panel for Button controls
+		VBox actionConfirm = new VBox();
+		
+		Button confirmLogin = new Button("Confirm Log-in");
+		confirmLogin.setMaxWidth(buttonWidth);
+		
+		Button confirmLogout = new Button("Confirm Log-out");
+		confirmLogout.setMaxWidth(buttonWidth);
+		
+		Button confirmCreation = new Button("Confirm Creation");
+		confirmCreation.setMaxWidth(buttonWidth);
+
+		Button backToMenu = new Button("Back to Menu");
+		backToMenu.setMaxWidth(buttonWidth);
+
+		backToMenu.setOnMouseClicked(e -> {
+			scene.setRoot(mainMenu());
+		});
+		
+		actionConfirm.getChildren().add(confirmLogin);
+		actionConfirm.getChildren().add(confirmLogout);
+		actionConfirm.getChildren().add(confirmCreation);
+		actionConfirm.getChildren().add(backToMenu);
+
+		root.setLeft(dataEntry);
+		root.setRight(actionConfirm);
 		return root;
 	}
 	
 	
 	// Battle setup menu interface
-	public Group matchMenu() {
-
-		Group root = new Group();
-		HBox hbox = new HBox();
-		root.getChildren().add(hbox);
-		
+	public BorderPane matchSetupMenu() {
+		BorderPane root = new BorderPane();
+		root.setPadding(new Insets(20,20,20,20));
+		HBox content = new HBox();
+		content.setSpacing(5);
+		root.setCenter(content);	
 		
 		// Middle Panel
 		VBox centerDisplay = new VBox();
-		
+		centerDisplay.setSpacing(5);
 		Text choose = new Text("CHOOSE YOUR FIGHTER");
 		centerDisplay.getChildren().add(choose);
 		
@@ -156,13 +249,20 @@ public class GameDisplay extends Application {
 		
 		// Buttons
 		
-		Button startGame = new Button("START GAME");
-		centerDisplay.getChildren().add(startGame);
-		startGame.setDisable(true);
+		HBox lowerButtons = new HBox();
+		lowerButtons.setSpacing(5);
+		centerDisplay.getChildren().add(lowerButtons);
 		
+		
+		Button startGame = new Button("START GAME");
+		lowerButtons.getChildren().add(startGame);
+		startGame.setDisable(true);
+		startGame.setMinWidth(250);
 		
 		Button returnToMenu = new Button("Back to Menu");
-		centerDisplay.getChildren().add(returnToMenu);
+		returnToMenu.setMinWidth(250);
+
+		lowerButtons.getChildren().add(returnToMenu);
 		
 		returnToMenu.setOnMouseClicked(e -> {
 			scene.setRoot(mainMenu());
@@ -171,11 +271,11 @@ public class GameDisplay extends Application {
 		// Event Listener for Start Game Button. Will change scene root to the match interface
 		// and clear all necessary match conditions
 		startGame.setOnMouseClicked(e -> {
-			scene.setRoot(matchInterface());
 			battleFinished = false;
 			readyToAdvance = false;
 			p1.setHasActed(false);
 			p2.setHasActed(false);
+			scene.setRoot(matchInterface());
 		});	
 		
 		// Left Panel
@@ -186,9 +286,9 @@ public class GameDisplay extends Application {
 		
 		
 		
-		hbox.getChildren().add(player1);
-		hbox.getChildren().add(centerDisplay);
-		hbox.getChildren().add(player2);
+		content.getChildren().add(player1);
+		content.getChildren().add(centerDisplay);
+		content.getChildren().add(player2);
 		
 		return root;
 	}
@@ -198,7 +298,7 @@ public class GameDisplay extends Application {
 	public VBox matchPlayerPanel(ListView<Fighter> fighterChoice, Button start, boolean isLeftPanel) {		
 		
 		VBox playerVBox = new VBox();
-		
+		playerVBox.setSpacing(5);
 		// ChoiceBox for choosing a player profile from a list of User Names and public profiles
 		ChoiceBox<Player> playerProfile = new ChoiceBox<>();
 		playerVBox.getChildren().add(playerProfile);
@@ -272,11 +372,11 @@ public class GameDisplay extends Application {
 		
 	// Main interface for the turn of a match. Called recursively until
 	// match is over
-	public Group matchInterface() {
-		Group root = new Group();
-		BorderPane display = new BorderPane();
-
-		root.getChildren().add(display);
+	public BorderPane matchInterface() {
+		
+		BorderPane root = new BorderPane();
+		root.setPadding(new Insets(20, 20, 20, 20));
+		
 		
 		Button advance = new Button("Continue");
 		if(battleFinished)
@@ -290,7 +390,8 @@ public class GameDisplay extends Application {
 		Text turnDisplay = new Text("TURN " + turnNum);
 		
 		ListView<String> battleLog = new ListView<>();
-		battleLog.setMaxWidth(600);
+		battleLog.setMinWidth(600);
+		
 		try {
 			for(int i = 0; i < p1.getCurrentBattle().getBattleTurns().size(); i++) {
 				battleLog.getItems().add(p1.getCurrentBattle().getBattleTurns().get(i));
@@ -306,6 +407,7 @@ public class GameDisplay extends Application {
 			p2.setHasActed(false);
 			
 			if(!battleFinished) {
+				
 				String turnText = Fighter.compareAction(p1.getFighter(), p2.getFighter());
 				p1.getCurrentBattle().getBattleTurns().add(turnText);
 				turnNum ++;
@@ -313,6 +415,7 @@ public class GameDisplay extends Application {
 			}
 
 			
+			//If battle is finished, perform necessary file save operations
 			if(battleFinished){
 				if(readyToAdvance) {
 					scene.setRoot(mainMenu());
@@ -331,11 +434,11 @@ public class GameDisplay extends Application {
 			
 		});
 		
-		display.setTop(turnDisplay);
-		display.setCenter(battleLog);
-		display.setLeft(p1c);
-		display.setRight(p2c);
-		display.setBottom(advance);
+		root.setTop(turnDisplay);
+		root.setCenter(battleLog);
+		root.setLeft(p1c);
+		root.setRight(p2c);
+		root.setBottom(advance);
 
 		return root;
 	}
@@ -361,17 +464,16 @@ public class GameDisplay extends Application {
 	// Panel in game match for player control scheme. 
 	//TODO: Add AI functionality through separate method or some other incorporation
 	public VBox playerControls(Player p, Button advance) {
-		
-		int buttonWidth = 200;
 
-		
+		int buttonWidth = 200;
+	
 		VBox playerPanel = new VBox();
 		playerPanel.setSpacing(5);
-		
+
 		String fighterStats = p.getFighter().getName() + "\nHP: " + p.getFighter().getHp();
 		
 		Text fighterDisplay = new Text(fighterStats);
-		
+
 		Button attack = new Button("Attack (" + p.getFighter().getAttack() + ")");
 		Button grab = new Button("Grab (" + p.getFighter().getGrab() + ")");
 		Button counter = new Button("Counter (" + p.getFighter().getCounter() + ")");
@@ -388,7 +490,7 @@ public class GameDisplay extends Application {
 		playerPanel.getChildren().add(counter);
 		playerPanel.getChildren().add(deflect);
 		
-		
+		// Logic for disabling action buttons if battle is finished
 		if(battleFinished) {
 			attack.setDisable(true);
 			grab.setDisable(true);
@@ -401,7 +503,7 @@ public class GameDisplay extends Application {
 			deflect.setDisable(false);
 		}
 		
-		attack.setOnMouseClicked(e -> {
+		attack.setOnMouseClicked(e -> {	
 			p.getFighter().setChosenAction(0);
 			p.setHasActed(true);
 			attack.setDisable(true);

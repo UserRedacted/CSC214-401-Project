@@ -33,7 +33,9 @@ public class Fighter {
 	public String toString() {
 		return name;
 	}
-
+	
+	// Takes an integer 0-3 representing an action and changes it to
+	// a string to print to the screen
 	public String actionToString() {
 		switch(chosenAction) {
 		case 0:
@@ -104,80 +106,80 @@ public class Fighter {
 	
 	// The brains of the combat system. Determines the winner/loser of a pair of actions
 	//TODO: Figure out why the game clones Fighter b's moves if a and b are the same Fighter
-	public static String compareAction(Fighter a, Fighter b) {
+	public static String compareAction(Fighter first, Fighter second) {
 		StringBuilder output = new StringBuilder();
 		int damage = 0;
 		int newHp = 0;
 		// If Player A and B choose the same move
-		if(a.getChosenAction() == b.getChosenAction()) {
-			output.append(printActions(a,b));
+		if(first.getChosenAction() == second.getChosenAction()) {
+			output.append(printActions(first,second));
 			output.append("The actions cancel out! No one gets hurt...");
 		}
 		
 		// If Player A attacks and Player B grabs
-		else if(a.getChosenAction() == 0 && b.getChosenAction() == 1) {
+		else if(first.getChosenAction() == 0 && second.getChosenAction() == 1) {
 			
-			damage = a.attack;
-			newHp = b.hp - damage;	
-			b.hp = newHp;
+			damage = first.attack;
+			newHp = second.hp - damage;	
+			second.hp = newHp;
 					
-			output.append(printActions(a,b));
-			output.append(printResults(b, a, damage));
+			output.append(printActions(first,second));
+			output.append(printResults(second, first, damage));
 		}
 		
 		// If Player A attacks and Player B counters
-		else if(a.getChosenAction() == 0 && b.getChosenAction() == 2) {
+		else if(first.getChosenAction() == 0 && second.getChosenAction() == 2) {
 
-			damage = b.counter;
-			newHp = a.hp - damage;
-			a.hp = newHp;
+			damage = second.counter;
+			newHp = first.hp - damage;
+			first.hp = newHp;
 			
-			output.append(printActions(a,b));
-			output.append(printResults(a, b, damage));
+			output.append(printActions(first,second));
+			output.append(printResults(first, second, damage));
 		}
 		
 		// If Player A attacks and Player B deflects
-		else if(a.getChosenAction() == 0 && b.getChosenAction() == 3) {
+		else if(first.getChosenAction() == 0 && second.getChosenAction() == 3) {
 			
-			damage = a.attack;
-			newHp = b.hp - damage;
-			b.hp = newHp;
+			damage = first.attack;
+			newHp = second.hp - damage;
+			second.hp = newHp;
 			
-			output.append(printActions(a,b));
-			output.append(printResults(b, a, damage));
+			output.append(printActions(first,second));
+			output.append(printResults(second, first, damage));
 		}
 		
 		// If Player A grabs and Player B counters
-		else if(a.getChosenAction() == 1 && b.getChosenAction() == 2) {
+		else if(first.getChosenAction() == 1 && second.getChosenAction() == 2) {
 			
-			damage = a.grab;
-			newHp = b.hp - damage;
-			b.hp = newHp;
+			damage = first.grab;
+			newHp = second.hp - damage;
+			second.hp = newHp;
 			
-			output.append(printActions(a,b));
-			output.append(printResults(b, a, damage));
+			output.append(printActions(first,second));
+			output.append(printResults(second, first, damage));
 		}
 		
 		// If Player A grabs and Player B deflects
-		else if(a.getChosenAction() == 1 && b.getChosenAction() == 3) {
+		else if(first.getChosenAction() == 1 && second.getChosenAction() == 3) {
 			
-			damage = b.deflect*a.grab/100;
-			newHp = a.hp - damage;
-			a.hp = newHp;
+			damage = second.deflect*first.grab/100;
+			newHp = first.hp - damage;
+			first.hp = newHp;
 			
-			output.append(printActions(a,b));
-			output.append(printResults(a, b, damage));
+			output.append(printActions(first,second));
+			output.append(printResults(first, second, damage));
 		}
 		
 		// If Player A counters and Player B deflects
-		else if(a.getChosenAction() == 2 && b.getChosenAction() == 3) {
-			output.append(printActions(a,b));
+		else if(first.getChosenAction() == 2 && second.getChosenAction() == 3) {
+			output.append(printActions(first,second));
 			output.append("Nothing happens...\n");
 		}
 		
 		// If none of these conditions are met, the test will be run again with Player A and B swapping positions (recursive)
 		else {
-			return compareAction(b, a);
+			return compareAction(second, first);
 		}
 		return output.toString();
 		

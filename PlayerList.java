@@ -5,13 +5,10 @@ public class PlayerList {
 	
 	ArrayList<Player> players = new ArrayList<>();
 	
-	
-	
+
 	public PlayerList() {
 		loadPlayers();
 	}
-
-
 
 	private void loadPlayers() {
 
@@ -23,16 +20,13 @@ public class PlayerList {
 	}
 
 
-
 	public ArrayList<Player> getPlayers() {
 		return players;
 	}
 
-
 	public void setPlayers(ArrayList<Player> players) {
 		this.players = players;
 	}
-	
 	
 	
 	
