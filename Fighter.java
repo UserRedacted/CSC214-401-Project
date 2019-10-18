@@ -2,6 +2,7 @@
 public class Fighter {
 
 	private String name;
+	private String spriteFile;
 	private int hp;
 	private int attack;
 	private int grab;
@@ -19,13 +20,25 @@ public class Fighter {
 	}
 	
 	
+	public Fighter(Fighter f) {
+		name = f.name;
+		spriteFile = f.spriteFile;
+		hp = f.hp;
+		attack = f.attack;
+		grab = f.grab;
+		counter = f.counter;
+		deflect = f.deflect;
+		chosenAction = f.chosenAction;
+	}
+
+
 	public String printStats() {
 		String output = "";
-		output += "\nHP: " + hp;
-		output += "\nAttack: " + attack;
-		output += "\nGrab: " + grab;
-		output += "\nCounter Attack: " + counter;
-		output += "\nDeflect: " + deflect;
+		output += "HP:\t\t" + hp;
+		output += "\nAtk:\t\t" + attack;
+		output += "\nGrb:\t\t" + grab;
+		output += "\nCtr:\t\t" + counter;
+		output += "\nDft:\t\t" + deflect;
 		return output;
 	}
 	
@@ -93,7 +106,12 @@ public class Fighter {
 	public void setHp(int hp) {
 		this.hp = hp;
 	}
-
+	public void setSpriteFile(String spriteFile) {
+		this.spriteFile = spriteFile;
+	}
+	
+	
+	
 	// Helper method for displaying actions taken during combat
 	public static String printActions(Fighter a, Fighter b) {
 		return a.name + " " + a.actionToString() + "s and " + b.name + " " + b.actionToString() + "s!\n";
@@ -186,8 +204,8 @@ public class Fighter {
 	}
 
 
-
-
-
+	public String getSpriteFile() {
+		return spriteFile;
+	}
 	
 }

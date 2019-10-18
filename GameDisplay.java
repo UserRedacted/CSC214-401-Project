@@ -16,18 +16,20 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
-public class GameDisplay extends Application {
-
+public class GameDisplay extends Application {	
 	
+
 	Scene scene;
 	
 	// Objects for playing sounds through JavaFX
 	static MediaPlayer musicPlayer;
 	static MediaPlayer soundPlayer;
-	
+	static FileInputStream imageViewer;
 	// Placeholder Player objects for whoever is fighting in a match
 	Player p1;
 	Player p2;
@@ -46,7 +48,7 @@ public class GameDisplay extends Application {
 	// JavaFX Window Runner
 	@Override
 	public void start(Stage stage)  {
-		
+
 		
 		// NOTE: This can be used as a template for playing music and sound effects
 		File song = new File("resources\\music\\Theme.wav");
@@ -56,7 +58,7 @@ public class GameDisplay extends Application {
 		musicPlayer.setCycleCount(1000);
 		
 		// Set the initial scene to the main menu
-		scene = new Scene(mainMenu(), 1000, 650);
+		scene = new Scene(mainMenu(), 1200, 800);
 		scene.getStylesheets().add("customStyle.css");
 		
 		stage.setScene(scene);
@@ -80,7 +82,7 @@ public class GameDisplay extends Application {
 	
 	
 	// Function for controlling main menu interface
-	public Group mainMenu() {
+	public BorderPane mainMenu() {
 		
 		int buttonWidth = 500; // int for controlling width of all buttons
 
@@ -92,10 +94,9 @@ public class GameDisplay extends Application {
 		content.setPadding(new Insets(10, 10, 10, 10));
 		
 		// Image Experimentation
-		FileInputStream input;
 		try {
-			input = new FileInputStream(new File("resources\\images\\project50.png"));
-			Image image = new Image(input);
+			imageViewer = new FileInputStream(new File("resources\\images\\project50.png"));
+			Image image = new Image(imageViewer);
 			ImageView titleHolder = new ImageView();
 			titleHolder.setImage(image);
 			content.getChildren().add(titleHolder);
@@ -212,14 +213,15 @@ public class GameDisplay extends Application {
 	public BorderPane matchSetupMenu() {
 		BorderPane root = new BorderPane();
 		root.setPadding(new Insets(20,20,20,20));
-		HBox content = new HBox();
-		content.setSpacing(5);
-		root.setCenter(content);	
+	
 		
 		// Middle Panel
 		VBox centerDisplay = new VBox();
 		centerDisplay.setSpacing(5);
+		centerDisplay.setMinWidth(500);
 		Text choose = new Text("CHOOSE YOUR FIGHTER");
+		choose.setFont(new Font("Impact", 32));
+		choose.setTextAlignment(TextAlignment.RIGHT);
 		centerDisplay.getChildren().add(choose);
 		
 		HBox listContainer = new HBox();
@@ -229,8 +231,12 @@ public class GameDisplay extends Application {
 		//List Views
 		
 		FighterList fighterList = new FighterList();
-	
+		
+		
 		ListView<Fighter> p1Fighter = new ListView<>();
+		p1Fighter.setMinWidth(300);
+		p1Fighter.setMaxWidth(800);
+
 		for(int i = 0; i < fighterList.getFighters().size(); i++) {
 			p1Fighter.getItems().add(fighterList.getFighters().get(i));
 		}	
@@ -240,6 +246,8 @@ public class GameDisplay extends Application {
 		
 		
 		ListView<Fighter> p2Fighter = new ListView<>();
+		p2Fighter.setMinWidth(300);
+
 		for(int i = 0; i < fighterList.getFighters().size(); i++) {
 			p2Fighter.getItems().add(fighterList.getFighters().get(i));
 		}
@@ -251,7 +259,6 @@ public class GameDisplay extends Application {
 		
 		HBox lowerButtons = new HBox();
 		lowerButtons.setSpacing(5);
-		centerDisplay.getChildren().add(lowerButtons);
 		
 		
 		Button startGame = new Button("START GAME");
@@ -279,16 +286,15 @@ public class GameDisplay extends Application {
 		});	
 		
 		// Left Panel
-		VBox player1 = matchPlayerPanel(p1Fighter, startGame, true);
-		
+		VBox p1VBox = matchPlayerPanel(p1Fighter, startGame, true);
 		// Right Panel
-		VBox player2 = matchPlayerPanel(p2Fighter, startGame, false);
+		VBox p2VBox = matchPlayerPanel(p2Fighter, startGame, false);
+
 		
-		
-		
-		content.getChildren().add(player1);
-		content.getChildren().add(centerDisplay);
-		content.getChildren().add(player2);
+		root.setLeft(p1VBox);
+		root.setCenter(centerDisplay);
+		root.setRight(p2VBox);
+		root.setBottom(lowerButtons);
 		
 		return root;
 	}
@@ -296,11 +302,16 @@ public class GameDisplay extends Application {
 	
 	// Panel for controlling player setup for a match
 	public VBox matchPlayerPanel(ListView<Fighter> fighterChoice, Button start, boolean isLeftPanel) {		
-		
 		VBox playerVBox = new VBox();
+		playerVBox.setMinWidth(200);
+		playerVBox.setMaxWidth(400);
 		playerVBox.setSpacing(5);
+		
 		// ChoiceBox for choosing a player profile from a list of User Names and public profiles
 		ChoiceBox<Player> playerProfile = new ChoiceBox<>();
+		playerProfile.setMinWidth(200);
+		playerProfile.setCenterShape(true);
+		//playerProfile
 		playerVBox.getChildren().add(playerProfile);
 		
 		//Set up the ChoiceBox to be filled with player profiles
@@ -312,14 +323,15 @@ public class GameDisplay extends Application {
 			
 		// Displaying the details for the selected fighter in the playerVBox
 		Text fighterHeader = new Text("FIGHTER STATS");
+		fighterHeader.setFont(new Font("Impact", 32));;
 		playerVBox.getChildren().add(fighterHeader);
 		
 		Text fighterStats = new Text();
+		fighterStats.setFont(new Font("Tahoma", 24));
 		playerVBox.getChildren().add(fighterStats);
 		
 		
-		//TODO: Add code for sprites to display potentially?
-		// Setting up an ImageView for potentially displaying GIFs of sprites
+		// Setting up an ImageView for displaying GIFs of sprites
 		ImageView fighterSprite = new ImageView();
 		playerVBox.getChildren().add(fighterSprite); // Container in place; content would be determined by ListView selection
 		
@@ -339,10 +351,22 @@ public class GameDisplay extends Application {
 		fighterChoice.getSelectionModel().selectedItemProperty().addListener(e -> {
 			Fighter selected = fighterChoice.getSelectionModel().getSelectedItem();
 			
+			
+			// Setting sprite for display
+			try {
+				imageViewer = new FileInputStream(new File(selected.getSpriteFile()));
+				Image image = new Image(imageViewer);
+				fighterSprite.setImage(image);
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
+			
+			
+			// Assigning fighter to player
 			if(isLeftPanel) {
-				p1.setFighter(fighterChoice.getSelectionModel().getSelectedItem());
+				p1.setFighter(new Fighter(fighterChoice.getSelectionModel().getSelectedItem()));
 			} else {
-				p2.setFighter(fighterChoice.getSelectionModel().getSelectedItem());
+				p2.setFighter(new Fighter(fighterChoice.getSelectionModel().getSelectedItem()));
 			}
 			fighterStats.setText(selected.printStats());	
 			checkSetup(start);
@@ -388,6 +412,7 @@ public class GameDisplay extends Application {
 		VBox p2c = playerControls(p2, advance);
 		
 		Text turnDisplay = new Text("TURN " + turnNum);
+		turnDisplay.setFont(new Font("Impact", 32));
 		
 		ListView<String> battleLog = new ListView<>();
 		battleLog.setMinWidth(600);
@@ -471,8 +496,9 @@ public class GameDisplay extends Application {
 		playerPanel.setSpacing(5);
 
 		String fighterStats = p.getFighter().getName() + "\nHP: " + p.getFighter().getHp();
-		
+
 		Text fighterDisplay = new Text(fighterStats);
+		fighterDisplay.setFont(new Font("Tahoma", 24));
 
 		Button attack = new Button("Attack (" + p.getFighter().getAttack() + ")");
 		Button grab = new Button("Grab (" + p.getFighter().getGrab() + ")");
@@ -484,11 +510,22 @@ public class GameDisplay extends Application {
 		counter.setMaxWidth(buttonWidth);
 		deflect.setMaxWidth(buttonWidth);
 
+		ImageView fighterSprite = new ImageView();
+		try {
+			imageViewer = new FileInputStream(new File(p.getFighter().getSpriteFile()));
+			Image image = new Image(imageViewer);
+			fighterSprite.setImage(image);
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		}
+		
+		
 		playerPanel.getChildren().add(fighterDisplay);
 		playerPanel.getChildren().add(attack);
 		playerPanel.getChildren().add(grab);
 		playerPanel.getChildren().add(counter);
 		playerPanel.getChildren().add(deflect);
+		playerPanel.getChildren().add(fighterSprite);
 		
 		// Logic for disabling action buttons if battle is finished
 		if(battleFinished) {
