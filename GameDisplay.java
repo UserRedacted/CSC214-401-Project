@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 
 import javafx.application.Application;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
@@ -28,17 +29,18 @@ public class GameDisplay extends Application {
 	
 	// Objects for playing sounds through JavaFX
 	static MediaPlayer musicPlayer;
+	static double musicVolume = 0.4;
 	static MediaPlayer soundPlayer;
 	static FileInputStream imageViewer;
 	// Placeholder Player objects for whoever is fighting in a match
 	Player p1;
 	Player p2;
 	
+	
 	// Global turn number of a match
 	int turnNum = 1;
 	
 	boolean battleFinished = false; // True when one player's fighter has <= 0 HP
-	boolean readyToAdvance = false; // Once the match is over, determines whether players can return to the main menu
 	
 	// Main method that loads printers and launches JavaFX window
 	public static void main(String[] args) {
@@ -54,11 +56,12 @@ public class GameDisplay extends Application {
 		File song = new File("resources\\music\\Theme.wav");
 		Media media = new Media(song.toURI().toString()); // Media class requires a URI file path. This allows it to work on any computer.
 		musicPlayer = new MediaPlayer(media);
+		musicPlayer.setVolume(musicVolume);
 		musicPlayer.setAutoPlay(true);
 		musicPlayer.setCycleCount(1000);
 		
 		// Set the initial scene to the main menu
-		scene = new Scene(mainMenu(), 1200, 800);
+		scene = new Scene(mainMenu(), 1600, 900);
 		scene.getStylesheets().add("customStyle.css");
 		
 		stage.setScene(scene);
@@ -88,9 +91,10 @@ public class GameDisplay extends Application {
 
 		BorderPane frame = new BorderPane();
 		VBox content = new VBox();
-		frame.setPadding(new Insets(0, 50, 0, 50));
+		content.setAlignment(Pos.TOP_CENTER);
+		frame.setPadding(new Insets(50, 50, 50, 50));
 		frame.setCenter(content);
-		content.setSpacing(5);
+		content.setSpacing(10);
 		content.setPadding(new Insets(10, 10, 10, 10));
 		
 		// Image Experimentation
@@ -210,6 +214,7 @@ public class GameDisplay extends Application {
 	
 	
 	// Battle setup menu interface
+	//TODO: Add option to select random fighter
 	public BorderPane matchSetupMenu() {
 		BorderPane root = new BorderPane();
 		root.setPadding(new Insets(20,20,20,20));
@@ -217,16 +222,18 @@ public class GameDisplay extends Application {
 		
 		// Middle Panel
 		VBox centerDisplay = new VBox();
+		centerDisplay.setAlignment(Pos.CENTER);
 		centerDisplay.setSpacing(5);
 		centerDisplay.setMinWidth(500);
+		
 		Text choose = new Text("CHOOSE YOUR FIGHTER");
 		choose.setFont(new Font("Impact", 32));
 		choose.setTextAlignment(TextAlignment.RIGHT);
-		centerDisplay.getChildren().add(choose);
 		
-		HBox listContainer = new HBox();
-		centerDisplay.getChildren().add(listContainer);
-		
+		HBox mainContent = new HBox();
+		mainContent.setAlignment(Pos.CENTER);
+		mainContent.setSpacing(10);
+		mainContent.setPadding(new Insets(5, 5, 5, 5));
 		
 		//List Views
 		
@@ -235,12 +242,10 @@ public class GameDisplay extends Application {
 		
 		ListView<Fighter> p1Fighter = new ListView<>();
 		p1Fighter.setMinWidth(300);
-		p1Fighter.setMaxWidth(800);
 
 		for(int i = 0; i < fighterList.getFighters().size(); i++) {
 			p1Fighter.getItems().add(fighterList.getFighters().get(i));
 		}	
-		listContainer.getChildren().add(p1Fighter);
 		p1Fighter.setDisable(true);
 		
 		
@@ -251,23 +256,25 @@ public class GameDisplay extends Application {
 		for(int i = 0; i < fighterList.getFighters().size(); i++) {
 			p2Fighter.getItems().add(fighterList.getFighters().get(i));
 		}
-		listContainer.getChildren().add(p2Fighter);
 		p2Fighter.setDisable(true);
 
 		
+
+
 		// Buttons
 		
 		HBox lowerButtons = new HBox();
 		lowerButtons.setSpacing(5);
+		lowerButtons.setAlignment(Pos.CENTER);
 		
 		
 		Button startGame = new Button("START GAME");
 		lowerButtons.getChildren().add(startGame);
 		startGame.setDisable(true);
-		startGame.setMinWidth(250);
+		startGame.setMinWidth(300);
 		
 		Button returnToMenu = new Button("Back to Menu");
-		returnToMenu.setMinWidth(250);
+		returnToMenu.setMinWidth(300);
 
 		lowerButtons.getChildren().add(returnToMenu);
 		
@@ -279,30 +286,63 @@ public class GameDisplay extends Application {
 		// and clear all necessary match conditions
 		startGame.setOnMouseClicked(e -> {
 			battleFinished = false;
-			readyToAdvance = false;
 			p1.setHasActed(false);
 			p2.setHasActed(false);
 			scene.setRoot(matchInterface());
+			
+			
+			
+			//Playing the battle intro music and looping the battle theme music when the battle begins
+			
+			File song = new File("resources\\music\\BattleIntro.wav");
+			Media intro = new Media(song.toURI().toString()); // Media class requires a URI file path. This allows it to work on any computer.
+			musicPlayer.stop();
+			musicPlayer = new MediaPlayer(intro);
+			musicPlayer.setCycleCount(1);		
+			musicPlayer.setVolume(musicVolume);
+			musicPlayer.play();
+			musicPlayer.setOnEndOfMedia(new Runnable() {
+
+				@Override
+				public void run() {
+					File song = new File("resources\\music\\Battle.wav");
+					Media battle = new Media(song.toURI().toString());
+					musicPlayer = new MediaPlayer(battle);
+					musicPlayer.setVolume(musicVolume);
+					musicPlayer.play();
+					musicPlayer.setCycleCount(1000);
+				}
+				
+			});
 		});	
-		
+
+
 		// Left Panel
-		VBox p1VBox = matchPlayerPanel(p1Fighter, startGame, true);
+		VBox p1VBox = playerSetup(p1Fighter, startGame, true);
 		// Right Panel
-		VBox p2VBox = matchPlayerPanel(p2Fighter, startGame, false);
+		VBox p2VBox = playerSetup(p2Fighter, startGame, false);
+		
+		
+		mainContent.getChildren().add(p1VBox);
+		mainContent.getChildren().add(p1Fighter);
+		mainContent.getChildren().add(p2Fighter);
+		mainContent.getChildren().add(p2VBox);
+		
+		centerDisplay.getChildren().add(choose);
+		centerDisplay.getChildren().add(mainContent);
+		centerDisplay.getChildren().add(lowerButtons);
 
 		
-		root.setLeft(p1VBox);
 		root.setCenter(centerDisplay);
-		root.setRight(p2VBox);
-		root.setBottom(lowerButtons);
 		
 		return root;
 	}
 
 	
 	// Panel for controlling player setup for a match
-	public VBox matchPlayerPanel(ListView<Fighter> fighterChoice, Button start, boolean isLeftPanel) {		
+	public VBox playerSetup(ListView<Fighter> fighterChoice, Button start, boolean isLeftPanel) {		
 		VBox playerVBox = new VBox();
+		playerVBox.setAlignment(Pos.CENTER);
 		playerVBox.setMinWidth(200);
 		playerVBox.setMaxWidth(400);
 		playerVBox.setSpacing(5);
@@ -322,7 +362,7 @@ public class GameDisplay extends Application {
 		}
 			
 		// Displaying the details for the selected fighter in the playerVBox
-		Text fighterHeader = new Text("FIGHTER STATS");
+		Text fighterHeader = new Text("");
 		fighterHeader.setFont(new Font("Impact", 32));;
 		playerVBox.getChildren().add(fighterHeader);
 		
@@ -350,7 +390,7 @@ public class GameDisplay extends Application {
 		//Event listener for the a player's ListView
 		fighterChoice.getSelectionModel().selectedItemProperty().addListener(e -> {
 			Fighter selected = fighterChoice.getSelectionModel().getSelectedItem();
-			
+			fighterHeader.setText(selected.getName()); // Changes text of FighterHeader to reflect character choice
 			
 			// Setting sprite for display
 			try {
@@ -396,26 +436,37 @@ public class GameDisplay extends Application {
 		
 	// Main interface for the turn of a match. Called recursively until
 	// match is over
-	public BorderPane matchInterface() {
-		
-		BorderPane root = new BorderPane();
-		root.setPadding(new Insets(20, 20, 20, 20));
-		
+	public HBox matchInterface() {
 		
 		Button advance = new Button("Continue");
+		advance.setMinWidth(250);
+		
 		if(battleFinished)
 			advance.setDisable(false);
 		else
 			advance.setDisable(true);
 
+		
+		HBox root = new HBox();
+		root.setPadding(new Insets(20, 20, 20, 20));
+		root.setAlignment(Pos.CENTER);
+		
 		VBox p1c = playerControls(p1, advance);
 		VBox p2c = playerControls(p2, advance);
 		
+		
+		VBox display = new VBox();
+		display.setPadding(new Insets(10, 10, 10, 10));
+		display.setSpacing(10);
+		display.setAlignment(Pos.CENTER);
+		
 		Text turnDisplay = new Text("TURN " + turnNum);
-		turnDisplay.setFont(new Font("Impact", 32));
+		turnDisplay.setFont(new Font("Impact", 48));
+		
 		
 		ListView<String> battleLog = new ListView<>();
 		battleLog.setMinWidth(600);
+		battleLog.setMaxHeight(600);
 		
 		try {
 			for(int i = 0; i < p1.getCurrentBattle().getBattleTurns().size(); i++) {
@@ -427,43 +478,59 @@ public class GameDisplay extends Application {
 
 		// Event listener for round advancing
 		advance.setOnMouseClicked(e -> {
-			
-			p1.setHasActed(false);
-			p2.setHasActed(false);
-			
+
 			if(!battleFinished) {
+
+				p1.setHasActed(false);
+				p2.setHasActed(false);
 				
 				String turnText = Fighter.compareAction(p1.getFighter(), p2.getFighter());
 				p1.getCurrentBattle().getBattleTurns().add(turnText);
+				checkIfFinished();
+
 				turnNum ++;
 				turnDisplay.setText("TURN " + turnNum);
-			}
-
-			
-			//If battle is finished, perform necessary file save operations
-			if(battleFinished){
-				if(readyToAdvance) {
-					scene.setRoot(mainMenu());
-				} else {
-					p1.setNumBattles(p1.getNumBattles()+1);
-					p2.setNumBattles(p2.getNumBattles()+1);
-					p2.setCurrentBattle(p1.getCurrentBattle());
-					p1.getCurrentBattle().sendToFile(p1);
-					p2.getCurrentBattle().sendToFile(p2);
-					readyToAdvance = true;
-				}
-			} else {
-				checkIfFinished();
 				scene.setRoot(matchInterface());
 			}
+
+			//If battle is finished, perform necessary operations	
+			else {
+
+				// Changing to the main theme music
+				File song = new File("resources\\music\\Theme.wav");
+				Media theme = new Media(song.toURI().toString()); // Media class requires a URI file path. This allows it to work on any computer.
+				musicPlayer.stop();
+				musicPlayer = new MediaPlayer(theme);
+				musicPlayer.setCycleCount(1000);
+				musicPlayer.setVolume(musicVolume);
+				musicPlayer.play();
+				
+				
+				scene.setRoot(mainMenu());
+				
+				// Reset turn for next battle
+				turnNum = 1;
+				
+				// File saving to player profiles
+				p1.setNumBattles(p1.getNumBattles()+1);
+				p2.setNumBattles(p2.getNumBattles()+1);
+				p2.setCurrentBattle(p1.getCurrentBattle());
+				p1.getCurrentBattle().sendToFile(p1);
+				p2.getCurrentBattle().sendToFile(p2);
+			} 
+
 			
 		});
 		
-		root.setTop(turnDisplay);
-		root.setCenter(battleLog);
-		root.setLeft(p1c);
-		root.setRight(p2c);
-		root.setBottom(advance);
+		// Center VBox structure
+		display.getChildren().add(turnDisplay);
+		display.getChildren().add(battleLog);
+		display.getChildren().add(advance);
+		
+		// Root content stucture
+		root.getChildren().add(p1c);
+		root.getChildren().add(display);
+		root.getChildren().add(p2c);
 
 		return root;
 	}
@@ -473,27 +540,27 @@ public class GameDisplay extends Application {
 	private void checkIfFinished() {
 		if(p1.getFighter().getHp() <= 0 || p2.getFighter().getHp() <= 0) {
 			battleFinished = true;
-
 			if(p1.getFighter().getHp() > 0) {
-				p1.getCurrentBattle().getBattleTurns().add(p1.getName() + " WINS THE BATTLE!");
 				p2.getFighter().setHp(0);
+				p1.getCurrentBattle().getBattleTurns().add(p1.getName() + " WINS THE BATTLE!");
 			}
 			else {
-				p2.getCurrentBattle().getBattleTurns().add(p2.getName() + " WINS THE BATTLE!");
 				p1.getFighter().setHp(0);
-			}
-		}		
+				p1.getCurrentBattle().getBattleTurns().add(p2.getName() + " WINS THE BATTLE!");			}
+		}	
 	}
 	
 	
 	// Panel in game match for player control scheme. 
-	//TODO: Add AI functionality through separate method or some other incorporation
+	//TODO: Fix bug where AI match prevents advancing after game is over
 	public VBox playerControls(Player p, Button advance) {
 
-		int buttonWidth = 200;
+		int buttonWidth = 250;
 	
 		VBox playerPanel = new VBox();
-		playerPanel.setSpacing(5);
+		playerPanel.setAlignment(Pos.CENTER);
+		playerPanel.setSpacing(10);
+		playerPanel.setPadding(new Insets(10, 10, 10, 10));
 
 		String fighterStats = p.getFighter().getName() + "\nHP: " + p.getFighter().getHp();
 
@@ -528,7 +595,7 @@ public class GameDisplay extends Application {
 		playerPanel.getChildren().add(fighterSprite);
 		
 		// Logic for disabling action buttons if battle is finished
-		if(battleFinished) {
+		if(battleFinished || !p.isHuman()) {
 			attack.setDisable(true);
 			grab.setDisable(true);
 			counter.setDisable(true);
@@ -581,6 +648,11 @@ public class GameDisplay extends Application {
 
 		});
 		
+		if(!p.isHuman()) {
+			p.getFighter().setChosenAction((int)(Math.random()*4));
+			p.setHasActed(true);
+			checkActions(advance);
+		}
 		
 		return playerPanel;
 	}

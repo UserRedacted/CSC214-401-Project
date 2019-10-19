@@ -25,10 +25,11 @@ public class BattleLog {
 			try {
 				writer = new PrintWriter(battle.getName(), "UTF-8");
 				
-				for(int i = 0; i < p.getCurrentBattle().getBattleTurns().size(); i++) {
-					writer.println("ROUND " + (i+1));
+				for(int i = 0; i < p.getCurrentBattle().getBattleTurns().size()-1; i++) {
+					writer.println("TURN " + (i+1));
 					writer.println(p.getCurrentBattle().getBattleTurns().get(i));
 				}
+				writer.println(p.getCurrentBattle().getBattleTurns().get(p.getCurrentBattle().getBattleTurns().size()-1));
 				writer.close();
 				
 			} catch (Exception e) {

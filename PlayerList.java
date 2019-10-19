@@ -17,6 +17,12 @@ public class PlayerList {
 		
 		Player player2 = new Player("Player 2", true);
 		players.add(player2);
+		
+		Player aiEasy1 = new Player("AI Jerry (Easy)", false);
+		players.add(aiEasy1);
+		
+		Player aiEasy2 = new Player("AI Jarry (Easy)", false);
+		players.add(aiEasy2);
 	}
 
 
