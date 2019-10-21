@@ -1,7 +1,21 @@
+@font-face {
+    font-family: 'Fixedsys';
+    src: url("../resources/fixedsys.ttf");
+}
+
+.root {
+    -fx-background-image: url("../resources/images/background.gif");
+}
+
+#panel {
+    -fx-background-color: #FFFFFF;
+    -fx-padding: 20, 20, 20, 20;
+    -fx-spacing: 10;
+}
 
 .text {   
-    -fx-font-size: 20px;
-    -fx-font-weight: bold;
+    -fx-font-size: 24px;
+	-fx-font-family: 'Fixedsys';
 }
 
 .button {
@@ -14,7 +28,10 @@
     -fx-background-radius: 30;
     -fx-background-insets: 0,1,2,3,0;
     -fx-text-fill: #654b00;
-    -fx-font-weight: bold;
     -fx-font-size: 24px;
     -fx-padding: 25 20 25 20;
+}
+
+.pane {
+    -fx-background-color: #cbc4d7;
 }

@@ -34,11 +34,11 @@ public class Fighter {
 
 	public String printStats() {
 		String output = "";
-		output += "HP:\t\t" + hp;
-		output += "\nAtk:\t\t" + attack;
-		output += "\nGrb:\t\t" + grab;
-		output += "\nCtr:\t\t" + counter;
-		output += "\nDft:\t\t" + deflect;
+		output += "HP:\t" + hp;
+		output += "\nAtk:\t" + attack;
+		output += "\nGrb:\t" + grab;
+		output += "\nCtr:\t" + counter;
+		output += "\nDft:\t" + deflect + "%";
 		return output;
 	}
 	
@@ -109,6 +109,10 @@ public class Fighter {
 	public void setSpriteFile(String spriteFile) {
 		this.spriteFile = spriteFile;
 	}
+	public String getSpriteFile() {
+		return spriteFile;
+	}
+	
 	
 	
 	
@@ -118,81 +122,104 @@ public class Fighter {
 	}
 	
 	// Helper method for printing results of a turn of combat
-	public static String printResults(Fighter loser, Fighter winner, int damage) {
-		return loser.name + " takes " + damage + "dmg from " + winner.name + "'s " + winner.actionToString() +"\n";
+	public static String printDamage(Fighter loser, int damage) {
+		return "\t" + loser.name + " takes " + damage + "dmg!\n";
 	}	
 	
 	// The brains of the combat system. Determines the winner/loser of a pair of actions
-	//TODO: Figure out why the game clones Fighter b's moves if a and b are the same Fighter
 	public static String compareAction(Fighter first, Fighter second) {
+		
 		StringBuilder output = new StringBuilder();
 		int damage = 0;
-		int newHp = 0;
-		// If Player A and B choose the same move
-		if(first.getChosenAction() == second.getChosenAction()) {
-			output.append(printActions(first,second));
-			output.append("The actions cancel out! No one gets hurt...");
+		
+		
+		output.append(printActions(first,second)); // Printing what was done
+		
+		
+		// If Player A and B both attack
+		if(first.chosenAction == 0 && second.chosenAction == 0) {
+			
+				damage = first.attack;
+				second.hp -= damage;
+				output.append(printDamage(second, damage));
+				
+				damage = second.attack;
+				first.hp -= damage;
+				output.append(printDamage(first, damage));
+
+		}
+		
+		// If Player A and B both grab
+		else if(first.chosenAction == 1 && second.chosenAction == 1) {
+			
+			if(first.grab > second.grab) {
+				damage = first.grab - second.grab;
+				second.hp -= damage;
+				output.append(printDamage(second, damage));
+			} else if(second.grab > first.grab) {
+				damage = second.grab - first.grab;
+				first.hp -= damage;
+				output.append(printDamage(first, damage));
+			} else {
+				output.append("\tThe grabs cancel out!\n");
+			}
+		}
+		
+		
+		// If Player A and B both choose deflect or counter
+		else if(first.chosenAction == second.chosenAction) {
+			output.append("\t" + first.name + " and " + second.name + " glare at each other...\n");
 		}
 		
 		// If Player A attacks and Player B grabs
-		else if(first.getChosenAction() == 0 && second.getChosenAction() == 1) {
+		else if(first.chosenAction == 0 && second.chosenAction == 1) {
 			
 			damage = first.attack;
-			newHp = second.hp - damage;	
-			second.hp = newHp;
+			second.hp -= damage;
 					
-			output.append(printActions(first,second));
-			output.append(printResults(second, first, damage));
+			output.append(printDamage(second, damage));
 		}
 		
 		// If Player A attacks and Player B counters
-		else if(first.getChosenAction() == 0 && second.getChosenAction() == 2) {
+		else if(first.chosenAction == 0 && second.chosenAction== 2) {
 
 			damage = second.counter;
-			newHp = first.hp - damage;
-			first.hp = newHp;
+			first.hp -= damage;
 			
-			output.append(printActions(first,second));
-			output.append(printResults(first, second, damage));
+			output.append(printDamage(first, damage));
 		}
 		
 		// If Player A attacks and Player B deflects
-		else if(first.getChosenAction() == 0 && second.getChosenAction() == 3) {
+		else if(first.chosenAction == 0 && second.chosenAction == 3) {
 			
 			damage = first.attack;
-			newHp = second.hp - damage;
-			second.hp = newHp;
+			second.hp -= damage;
+
 			
-			output.append(printActions(first,second));
-			output.append(printResults(second, first, damage));
+			output.append(printDamage(second, damage));
 		}
 		
 		// If Player A grabs and Player B counters
-		else if(first.getChosenAction() == 1 && second.getChosenAction() == 2) {
+		else if(first.chosenAction == 1 && second.chosenAction == 2) {
 			
 			damage = first.grab;
-			newHp = second.hp - damage;
-			second.hp = newHp;
+			second.hp -= damage;
 			
-			output.append(printActions(first,second));
-			output.append(printResults(second, first, damage));
+			output.append(printDamage(second, damage));
 		}
 		
 		// If Player A grabs and Player B deflects
-		else if(first.getChosenAction() == 1 && second.getChosenAction() == 3) {
+		else if(first.chosenAction == 1 && second.chosenAction == 3) {
 			
 			damage = second.deflect*first.grab/100;
-			newHp = first.hp - damage;
-			first.hp = newHp;
+			first.hp -= damage;
 			
-			output.append(printActions(first,second));
-			output.append(printResults(first, second, damage));
+			output.append(printDamage(first, damage));
 		}
 		
 		// If Player A counters and Player B deflects
-		else if(first.getChosenAction() == 2 && second.getChosenAction() == 3) {
-			output.append(printActions(first,second));
-			output.append("Nothing happens...\n");
+		else if(first.chosenAction == 2 && second.chosenAction == 3) {
+			output.append("\t" + first.name + " and " + second.name + " stand around awkwardly...\n");
 		}
 		
 		// If none of these conditions are met, the test will be run again with Player A and B swapping positions (recursive)
@@ -204,8 +231,6 @@ public class Fighter {
 	}
 
 
-	public String getSpriteFile() {
-		return spriteFile;
-	}
+
 	
 }

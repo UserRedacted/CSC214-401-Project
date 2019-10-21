@@ -12,18 +12,25 @@ public class BalanceTester {
 		
 		
 		
+		testAll("Rocknald", 100000);
+		testAll("Walbow", 100000);
+		testAll("Zen", 100000);
 		testAll("Grubby", 100000);
-		
-
-
+		testAll("Sir Fuzzilot", 100000);
 
 	}
 
 	// Tests one fighter against every other fighter
 	private static void testAll(String fighter_name, int numBattles) {
+		System.out.println(fighter_name.toUpperCase());
+
+		System.out.println("_______________________________________");
 		for(int i = 0; i < fighters.getFighters().size(); i++) {
-			test(fighter_name, fighters.getFighters().get(i).getName(), numBattles);
+			if(fighter_name != fighters.getFighters().get(i).getName())
+				test(fighter_name, fighters.getFighters().get(i).getName(), numBattles);
 		}
+		System.out.println("_______________________________________");
+
 	}
 	
 	

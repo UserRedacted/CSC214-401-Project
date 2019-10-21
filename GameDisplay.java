@@ -29,9 +29,11 @@ public class GameDisplay extends Application {
 	
 	// Objects for playing sounds through JavaFX
 	static MediaPlayer musicPlayer;
-	static double musicVolume = 0.4;
+	static double musicVolume = 0.5;
 	static MediaPlayer soundPlayer;
 	static FileInputStream imageViewer;
+	static File customFont = new File("resources/fixedsys.ttf"); // Custom font
+	static String fixedsys = customFont.toURI().toString(); //URI path to the custom font, Fixedsys Regular
 	// Placeholder Player objects for whoever is fighting in a match
 	Player p1;
 	Player p2;
@@ -90,16 +92,22 @@ public class GameDisplay extends Application {
 		int buttonWidth = 500; // int for controlling width of all buttons
 
 		BorderPane frame = new BorderPane();
+		
 		VBox content = new VBox();
+		content.setId("panel");
 		content.setAlignment(Pos.TOP_CENTER);
-		frame.setPadding(new Insets(50, 50, 50, 50));
-		frame.setCenter(content);
 		content.setSpacing(10);
 		content.setPadding(new Insets(10, 10, 10, 10));
+		content.setMaxWidth(450);
+		
+		frame.setPadding(new Insets(50, 50, 50, 50));
+		frame.setCenter(content);
+
 		
 		// Image Experimentation
 		try {
-			imageViewer = new FileInputStream(new File("resources\\images\\project50.png"));
+			// Logo GIF
+			imageViewer = new FileInputStream(new File("resources\\images\\p50.gif"));
 			Image image = new Image(imageViewer);
 			ImageView titleHolder = new ImageView();
 			titleHolder.setImage(image);
@@ -137,14 +145,19 @@ public class GameDisplay extends Application {
 	
 	
 	// Menu for users to log in, out, create user profiles, etc.
-	public BorderPane loginMenu() {
+	public HBox loginMenu() {
 		
 		int buttonWidth = 300;
 		
 		
-		BorderPane root = new BorderPane();
+		HBox root = new HBox();
+		root.setId("panel");
+		root.setAlignment(Pos.CENTER);
+		
 		// Panel for TextFields
 		VBox dataEntry = new VBox();
+		dataEntry.setId("panel");
+		
 		
 		//Logging in
 		Text loginHeader = new Text("LOG IN");
@@ -185,6 +198,7 @@ public class GameDisplay extends Application {
 
 		//Panel for Button controls
 		VBox actionConfirm = new VBox();
+		actionConfirm.setId("panel");
 		
 		Button confirmLogin = new Button("Confirm Log-in");
 		confirmLogin.setMaxWidth(buttonWidth);
@@ -207,33 +221,40 @@ public class GameDisplay extends Application {
 		actionConfirm.getChildren().add(confirmCreation);
 		actionConfirm.getChildren().add(backToMenu);
 
-		root.setLeft(dataEntry);
-		root.setRight(actionConfirm);
+	
+		root.getChildren().add(dataEntry);
+		root.getChildren().add(actionConfirm);
+		
 		return root;
 	}
 	
 	
 	// Battle setup menu interface
 	//TODO: Add option to select random fighter
-	public BorderPane matchSetupMenu() {
-		BorderPane root = new BorderPane();
+	public HBox matchSetupMenu() {
+		HBox root = new HBox();
+		root.setId("panel");
+		root.setAlignment(Pos.CENTER);
 		root.setPadding(new Insets(20,20,20,20));
 	
 		
 		// Middle Panel
 		VBox centerDisplay = new VBox();
+		centerDisplay.setId("panel"); // fetching CSS data
 		centerDisplay.setAlignment(Pos.CENTER);
-		centerDisplay.setSpacing(5);
-		centerDisplay.setMinWidth(500);
+		centerDisplay.setMinWidth(700);
+		centerDisplay.setMaxWidth(900);
 		
 		Text choose = new Text("CHOOSE YOUR FIGHTER");
-		choose.setFont(new Font("Impact", 32));
+		
+		choose.setFont(Font.loadFont(fixedsys, 48));
 		choose.setTextAlignment(TextAlignment.RIGHT);
 		
-		HBox mainContent = new HBox();
-		mainContent.setAlignment(Pos.CENTER);
-		mainContent.setSpacing(10);
-		mainContent.setPadding(new Insets(5, 5, 5, 5));
+		HBox hboxFighter = new HBox();
+		hboxFighter.setId("panel");
+		hboxFighter.setAlignment(Pos.CENTER);
+		hboxFighter.setSpacing(10);
+		hboxFighter.setPadding(new Insets(5, 5, 5, 5));
 		
 		//List Views
 		
@@ -264,6 +285,7 @@ public class GameDisplay extends Application {
 		// Buttons
 		
 		HBox lowerButtons = new HBox();
+		lowerButtons.setId("panel");
 		lowerButtons.setSpacing(5);
 		lowerButtons.setAlignment(Pos.CENTER);
 		
@@ -285,11 +307,11 @@ public class GameDisplay extends Application {
 		// Event Listener for Start Game Button. Will change scene root to the match interface
 		// and clear all necessary match conditions
 		startGame.setOnMouseClicked(e -> {
+			
 			battleFinished = false;
 			p1.setHasActed(false);
 			p2.setHasActed(false);
 			scene.setRoot(matchInterface());
-			
 			
 			
 			//Playing the battle intro music and looping the battle theme music when the battle begins
@@ -323,17 +345,17 @@ public class GameDisplay extends Application {
 		VBox p2VBox = playerSetup(p2Fighter, startGame, false);
 		
 		
-		mainContent.getChildren().add(p1VBox);
-		mainContent.getChildren().add(p1Fighter);
-		mainContent.getChildren().add(p2Fighter);
-		mainContent.getChildren().add(p2VBox);
+		hboxFighter.getChildren().add(p1Fighter);
+		hboxFighter.getChildren().add(p2Fighter);
 		
 		centerDisplay.getChildren().add(choose);
-		centerDisplay.getChildren().add(mainContent);
+		centerDisplay.getChildren().add(hboxFighter);
 		centerDisplay.getChildren().add(lowerButtons);
-
 		
-		root.setCenter(centerDisplay);
+		root.getChildren().add(p1VBox);
+		root.getChildren().add(centerDisplay);
+		root.getChildren().add(p2VBox);
+
 		
 		return root;
 	}
@@ -342,6 +364,7 @@ public class GameDisplay extends Application {
 	// Panel for controlling player setup for a match
 	public VBox playerSetup(ListView<Fighter> fighterChoice, Button start, boolean isLeftPanel) {		
 		VBox playerVBox = new VBox();
+		playerVBox.setId("panel");
 		playerVBox.setAlignment(Pos.CENTER);
 		playerVBox.setMinWidth(200);
 		playerVBox.setMaxWidth(400);
@@ -363,11 +386,12 @@ public class GameDisplay extends Application {
 			
 		// Displaying the details for the selected fighter in the playerVBox
 		Text fighterHeader = new Text("");
-		fighterHeader.setFont(new Font("Impact", 32));;
+		fighterHeader.setFont(Font.loadFont(fixedsys, 48));
 		playerVBox.getChildren().add(fighterHeader);
 		
+		
 		Text fighterStats = new Text();
-		fighterStats.setFont(new Font("Tahoma", 24));
+		fighterStats.setFont(Font.loadFont(fixedsys, 32));
 		playerVBox.getChildren().add(fighterStats);
 		
 		
@@ -448,7 +472,7 @@ public class GameDisplay extends Application {
 
 		
 		HBox root = new HBox();
-		root.setPadding(new Insets(20, 20, 20, 20));
+		root.setId("panel");
 		root.setAlignment(Pos.CENTER);
 		
 		VBox p1c = playerControls(p1, advance);
@@ -456,17 +480,18 @@ public class GameDisplay extends Application {
 		
 		
 		VBox display = new VBox();
-		display.setPadding(new Insets(10, 10, 10, 10));
+		display.setId("panel");
 		display.setSpacing(10);
 		display.setAlignment(Pos.CENTER);
 		
 		Text turnDisplay = new Text("TURN " + turnNum);
-		turnDisplay.setFont(new Font("Impact", 48));
+		
+		turnDisplay.setFont(Font.loadFont(fixedsys, 64));
 		
 		
 		ListView<String> battleLog = new ListView<>();
 		battleLog.setMinWidth(600);
-		battleLog.setMaxHeight(600);
+		battleLog.setMinHeight(500);
 		
 		try {
 			for(int i = 0; i < p1.getCurrentBattle().getBattleTurns().size(); i++) {
@@ -558,6 +583,7 @@ public class GameDisplay extends Application {
 		int buttonWidth = 250;
 	
 		VBox playerPanel = new VBox();
+		playerPanel.setId("panel");
 		playerPanel.setAlignment(Pos.CENTER);
 		playerPanel.setSpacing(10);
 		playerPanel.setPadding(new Insets(10, 10, 10, 10));
@@ -565,12 +591,12 @@ public class GameDisplay extends Application {
 		String fighterStats = p.getFighter().getName() + "\nHP: " + p.getFighter().getHp();
 
 		Text fighterDisplay = new Text(fighterStats);
-		fighterDisplay.setFont(new Font("Tahoma", 24));
+		fighterDisplay.setFont(Font.loadFont(fixedsys, 48));
 
-		Button attack = new Button("Attack (" + p.getFighter().getAttack() + ")");
-		Button grab = new Button("Grab (" + p.getFighter().getGrab() + ")");
-		Button counter = new Button("Counter (" + p.getFighter().getCounter() + ")");
-		Button deflect = new Button("Deflect (" + p.getFighter().getDeflect() + "%)");
+		Button attack = new Button("Attack [" + p.getFighter().getAttack() + "]");
+		Button grab = new Button("Grab [" + p.getFighter().getGrab() + "]");
+		Button counter = new Button("Counter [" + p.getFighter().getCounter() + "]");
+		Button deflect = new Button("Deflect [" + p.getFighter().getDeflect() + "%]");
 		
 		attack.setMaxWidth(buttonWidth);
 		grab.setMaxWidth(buttonWidth);
