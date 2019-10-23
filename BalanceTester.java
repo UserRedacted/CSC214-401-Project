@@ -3,17 +3,26 @@ public class BalanceTester {
 	
 	
 	static FighterList fighters = new FighterList(); // Loading the game's fighters
-	static Fighter f1;
-	static Fighter f2;
-	static int f1_won = 0; // numerical win rate for Fighter 1
-	static int f2_won = 0; // numerical win rate for Fighter 2
+	static PlayerList players = new PlayerList();
+	
+	static AI p1;
+	static AI p2;
+	
+	static int p1_won = 0; // numerical win rate for Fighter 1
+	static int p2_won = 0; // numerical win rate for Fighter 2
 	
 	public static void main(String[] args) {
+
+
+		p1 = (AI) players.getPlayers().get(4);
+		p2 = (AI) players.getPlayers().get(5);
 		
-		
+		p1.setOpponent(p2);
+		p2.setOpponent(p1);
 		
 		testAll("Rocknald", 100000);
 		testAll("Walbow", 100000);
+		testAll("Blobert", 100000);
 		testAll("Zen", 100000);
 		testAll("Grubby", 100000);
 		testAll("Sir Fuzzilot", 100000);
@@ -22,8 +31,6 @@ public class BalanceTester {
 
 	// Tests one fighter against every other fighter
 	private static void testAll(String fighter_name, int numBattles) {
-		System.out.println(fighter_name.toUpperCase());
-
 		System.out.println("_______________________________________");
 		for(int i = 0; i < fighters.getFighters().size(); i++) {
 			if(fighter_name != fighters.getFighters().get(i).getName())
@@ -36,20 +43,20 @@ public class BalanceTester {
 	
 	// Function for testing two given fighters
 	private static void test(String fighter1_name, String fighter2_name, int numBattles) {
-		f1_won = 0;
-		f2_won = 0;
+		p1_won = 0;
+		p2_won = 0;
 		System.out.println("Match-up: " + fighter1_name + " vs. " + fighter2_name);
 		for(int i = 0; i < numBattles; i ++) {
 			setFighters(fighter1_name, fighter2_name);
 			
-			while(f1.getHp() > 0 && f2.getHp() > 0) {
+			while(p1.fighter.getHp() > 0 && p2.fighter.getHp() > 0) {
 				takeTurn();
 			}
 			
-			if(f1.getHp() > 0) {
-				f1_won ++;
+			if(p1.fighter.getHp() > 0) {
+				p1_won ++;
 			} else {
-				f2_won ++;
+				p2_won ++;
 			}
 		}	
 		printResults(numBattles);
@@ -63,27 +70,27 @@ public class BalanceTester {
 	// and displays the win-rate.
 	private static void printResults(int numBattles) {
 		double percentWon;
-		percentWon = 100.0*f1_won/numBattles;
-		System.out.println("\t" + f1.getName() + " wins " + f1_won + " / " +f2_won + " (" + percentWon + "%) of matches");
+		percentWon = 100.0*p1_won/numBattles;
+		System.out.println("\t" + p1.fighter.getName() + " wins " + p1_won + " / " +p2_won + " (" + percentWon + "%) of matches");
 	}
 
 	// One turn of combat, shortened and refined
 	private static void takeTurn() {
 		
-		f1.setChosenAction((int)(Math.random()*4));
-		f2.setChosenAction((int)(Math.random()*4));
+		p1.fighter.setChosenAction(p1.makeDecision(p1.getDifficulty()));
+		p2.fighter.setChosenAction(p2.makeDecision(p2.getDifficulty()));
 
-		Fighter.compareAction(f1, f2);
+		Fighter.compareAction(p1.fighter, p2.fighter);
 	}
 
 	// Looks for fighters with a name the same as the strings sent as parameters
 	private static void setFighters(String fighter1_name, String fighter2_name) {
 		for(int i = 0; i < fighters.getFighters().size(); i++) {
 			if(fighters.getFighters().get(i).getName().equals(fighter1_name)) {
-				f1 = new Fighter(fighters.getFighters().get(i));
+				p1.setFighter(new Fighter(fighters.getFighters().get(i)));
 			}
 			if(fighters.getFighters().get(i).getName().equals(fighter2_name)) {
-				f2 = new Fighter(fighters.getFighters().get(i));
+				p2.setFighter(new Fighter(fighters.getFighters().get(i)));
 			}
 		}
 	}

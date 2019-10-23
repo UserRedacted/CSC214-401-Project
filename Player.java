@@ -1,19 +1,18 @@
 
 public class Player {
 	
-	public static int numAnonPlayers = 0;
-	private boolean isHuman;
-	private String name;
-	private Fighter fighter;
-	private boolean hasActed = false;
-
-	private int numBattles;
-	private BattleLog currentBattle = new BattleLog();
+	protected boolean isHuman;
+	protected String name;
+	protected Fighter fighter;
+	protected boolean hasActed = false;
+	
+	protected int numBattles;
+	protected BattleLog currentBattle = new BattleLog();
 	
 	
-	public Player(String name, boolean isHuman) {
+	public Player(String name) {
 		this.name = name;
-		this.isHuman = isHuman;
+		isHuman = true;
 		numBattles = 0;
 		hasActed = false;
 	}

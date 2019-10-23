@@ -12,17 +12,23 @@ public class PlayerList {
 
 	private void loadPlayers() {
 
-		Player player1 = new Player("Player 1", true);
+		Player player1 = new Player("Player 1");
 		players.add(player1);
 		
-		Player player2 = new Player("Player 2", true);
+		Player player2 = new Player("Player 2");
 		players.add(player2);
 		
-		Player aiEasy1 = new Player("AI Jerry (Easy)", false);
+		Player aiEasy1 = new AI("AI Jerry (Easy)", 1);
 		players.add(aiEasy1);
 		
-		Player aiEasy2 = new Player("AI Jarry (Easy)", false);
+		Player aiEasy2 = new AI("AI Jarry (Easy)", 1);
 		players.add(aiEasy2);
+		
+		Player aiMedium1 = new AI("AI Gerry (Medium)", 2);
+		players.add(aiMedium1);
+		
+		Player aiMedium2 = new AI("AI Garry (Medium)", 2);
+		players.add(aiMedium2);
 	}
 
 
