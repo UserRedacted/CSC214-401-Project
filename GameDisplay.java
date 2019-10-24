@@ -1,3 +1,5 @@
+
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -240,7 +242,6 @@ public class GameDisplay extends Application {
 	
 	
 	// Battle setup menu interface
-	//TODO: Add option to select random fighter
 	public HBox matchSetupMenu() {
 		HBox root = new HBox();
 		root.setAlignment(Pos.CENTER);
@@ -268,6 +269,11 @@ public class GameDisplay extends Application {
 		//List Views
 		
 		FighterList fighterList = new FighterList();
+		//Fighter used exclusively for being mutated into another fighter in a match setup menu
+		Fighter random = new Fighter("Random", 0, 0, 0, 0, 0);
+		random.setSpriteIdle("resources\\sprites\\Random.gif");
+		fighterList.getFighters().add(0, random);
+		
 		
 		
 		ListView<Fighter> p1Fighter = new ListView<>();
@@ -431,10 +437,10 @@ public class GameDisplay extends Application {
 			fighterChoice.setDisable(false);
 			if(isLeftPanel) {
 				p1 = playerProfile.getSelectionModel().getSelectedItem();
-				p1.setFighter(fighterChoice.getSelectionModel().getSelectedItem());
+				giveFighter(p1, fighterChoice);
 			} else {
 				p2 = playerProfile.getSelectionModel().getSelectedItem();
-				p2.setFighter(fighterChoice.getSelectionModel().getSelectedItem());
+				giveFighter(p1, fighterChoice);
 			}
 			checkSetup(start);
 		});
@@ -456,9 +462,9 @@ public class GameDisplay extends Application {
 			
 			// Assigning fighter to player
 			if(isLeftPanel) {
-				p1.setFighter(new Fighter(fighterChoice.getSelectionModel().getSelectedItem()));
+				giveFighter(p1, fighterChoice);
 			} else {
-				p2.setFighter(new Fighter(fighterChoice.getSelectionModel().getSelectedItem()));
+				giveFighter(p2, fighterChoice);
 			}
 			fighterStats.setText(selected.printStats());	
 			checkSetup(start);
@@ -468,6 +474,22 @@ public class GameDisplay extends Application {
 		
 		return playerVBox;
 	}
+	
+	// Helper Method for playerSetup
+	// 	Assigns a fighter to a given player from the selected list of fighters, including a "Random" option which is not itself a character
+	public void giveFighter(Player p, ListView<Fighter> fighters) {
+		Fighter chosenFighter = fighters.getSelectionModel().getSelectedItem();
+		try {
+			if(chosenFighter.getName().equals("Random")) {
+				p.setFighter(new Fighter (fighters.getItems().get(  (int)(1+  Math.random() * (fighters.getItems().size()-2)  )  )));
+			} else {
+				p.setFighter(new Fighter(chosenFighter));	
+			}
+		} catch (NullPointerException n) {
+			// Do nothing
+		}
+	}
+	
 
 	// Helper method for determining if the match setup is ready to progress;
 	// Enables the start button if the check is good
@@ -484,7 +506,14 @@ public class GameDisplay extends Application {
 		}
 
 	}
+	
 		
+	
+	
+	
+	/// MAIN INTERFACE CODE BELOW
+	
+	
 		
 	// Main interface for the turn of a match. Called recursively until
 	// match is over
@@ -591,6 +620,9 @@ public class GameDisplay extends Application {
 			timer.schedule(new ChangeText(countdown, ". . ."), 1000);
 			timer.schedule(new ChangeText(countdown, "FIGHT!"), 1500);
 			
+			timer.schedule(new ChangeText((Text)p1c.getChildren().get(1), ("HP: " + p1.getFighter().getHp())), 1500);
+			timer.schedule(new ChangeText((Text)p2c.getChildren().get(1), ("HP: " + p2.getFighter().getHp())), 1500);
+			
 			timer.schedule(new UpdateSprites(
 					(ImageView)p1c.getChildren().get(p1c.getChildren().size()-1),
 					(ImageView)p2c.getChildren().get(p1c.getChildren().size()-1)), 
@@ -600,6 +632,8 @@ public class GameDisplay extends Application {
 			timer.schedule(new ChangeText(countdown, ""), 3500);
 		}
 		
+		// Scrolling to the last item on the battle log (most recent turn)
+		battleLog.scrollTo(battleLog.getItems().size()-1);
 		
 		return root;
 	}
@@ -771,7 +805,7 @@ public class GameDisplay extends Application {
 			keys[3] = KeyCode.P;
 		}
 		
-		int buttonWidth = 250;
+		int buttonWidth = 300;
 	
 		VBox playerPanel = new VBox();
 		playerPanel.setId("panel");
@@ -782,21 +816,19 @@ public class GameDisplay extends Application {
 		
 		Text name = new Text();
 		name.setFont(Font.loadFont(fixedsys, 48));
-		if(isLeft)
-			name.setText(p1.name);
-		else
-			name.setText(p2.name);
+		name.setTextAlignment(TextAlignment.CENTER);
+		name.setText(p.name + "\n" + p.getFighter().getName());
 
 
-		String fighterStats = p.getFighter().getName() + "\nHP: " + p.getFighter().getHp();
+		String health = "HP: " + p.getFighter().getPrevHp();
 
-		Text fighterDisplay = new Text(fighterStats);
-		fighterDisplay.setFont(Font.loadFont(fixedsys, 48));
+		Text fighterHealth = new Text(health);
+		fighterHealth.setFont(Font.loadFont(fixedsys, 48));
 
-		Button attack = new Button(keys[0] + " = Attack [" + p.getFighter().getAttack() + "]");
-		Button grab = new Button(keys[1] + " = Grab [" + p.getFighter().getGrab() + "]");
-		Button counter = new Button(keys[2] + " = Counter [" + p.getFighter().getCounter() + "]");
-		Button deflect = new Button(keys[3] + " = Deflect [" + p.getFighter().getDeflect() + "%]");
+		Button attack = new Button(keys[0] + ": Attack[" + p.getFighter().getAttack() + "]");
+		Button grab = new Button(keys[1] + ": Grab[" + p.getFighter().getGrab() + "]");
+		Button counter = new Button(keys[2] + ": Counter[" + p.getFighter().getCounter() + "]");
+		Button deflect = new Button(keys[3] + ": Deflect[" + p.getFighter().getDeflect() + "%]");
 		
 		attack.setMaxWidth(buttonWidth);
 		grab.setMaxWidth(buttonWidth);
@@ -812,13 +844,16 @@ public class GameDisplay extends Application {
 			e1.printStackTrace();
 		}
 		
+		
+		// Assembly order
 		playerPanel.getChildren().add(name);
-		playerPanel.getChildren().add(fighterDisplay);
+		playerPanel.getChildren().add(fighterHealth);
 		playerPanel.getChildren().add(attack);
 		playerPanel.getChildren().add(grab);
 		playerPanel.getChildren().add(counter);
 		playerPanel.getChildren().add(deflect);
 		playerPanel.getChildren().add(fighterSprite);
+		
 		
 		// Logic for disabling action buttons if battle is finished
 		if(battleFinished || !p.isHuman()) {
@@ -880,6 +915,8 @@ public class GameDisplay extends Application {
 	}
 	
 	//Helper method for player controls; Enables/disables "Continue"
+
+	
 	// button based on whether both players have acted
 	public void checkActions(Button advance) {	
 		if(p1.hasActed() && p2.hasActed())

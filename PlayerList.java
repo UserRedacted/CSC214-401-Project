@@ -18,16 +18,16 @@ public class PlayerList {
 		Player player2 = new Player("Player 2");
 		players.add(player2);
 		
-		Player aiEasy1 = new AI("AI Jerry (Easy)", 1);
+		Player aiEasy1 = new AI("AI Jerry", 1);
 		players.add(aiEasy1);
 		
-		Player aiEasy2 = new AI("AI Jarry (Easy)", 1);
+		Player aiEasy2 = new AI("AI Jarry", 1);
 		players.add(aiEasy2);
 		
-		Player aiMedium1 = new AI("AI Gerry (Medium)", 2);
+		Player aiMedium1 = new AI("AI Gerry", 2);
 		players.add(aiMedium1);
 		
-		Player aiMedium2 = new AI("AI Garry (Medium)", 2);
+		Player aiMedium2 = new AI("AI Garry", 2);
 		players.add(aiMedium2);
 	}
 

@@ -20,7 +20,11 @@ public class Player {
 	
 	@Override
 	public String toString() {
-		return name;
+		if(name.length() >= 11) {
+			return name.substring(0, 9) + "...";
+		} else {
+			return name;
+		}
 	}
 
 	// Setters and Getters for private data fields

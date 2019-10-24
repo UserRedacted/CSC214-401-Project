@@ -5,6 +5,7 @@ public class Fighter {
 	private String spriteIdle;
 	private String spriteHurt;
 	private int hp;
+	private int prevHp;
 	private int attack;
 	private int grab;
 	private int counter;
@@ -16,6 +17,7 @@ public class Fighter {
 	public Fighter(String name, int hp, int attack, int grab, int counter, int deflect) {
 		this.name = name;
 		this.hp = hp;
+		this.prevHp = hp;
 		this.attack = attack;
 		this.grab = grab;
 		this.counter = counter;
@@ -28,6 +30,7 @@ public class Fighter {
 		spriteIdle = f.spriteIdle;
 		spriteHurt = f.spriteHurt;
 		hp = f.hp;
+		prevHp = f.prevHp;
 		attack = f.attack;
 		grab = f.grab;
 		counter = f.counter;
@@ -67,7 +70,6 @@ public class Fighter {
 		return null;
 	}
 
-	
 	public String getChosenActionStat() {
 		String stat = "";
 		if(chosenAction == 0) {
@@ -85,67 +87,7 @@ public class Fighter {
 		return stat;
 	}
 	
-	public int getChosenAction() {
-		return chosenAction;
-	}
-	public void setChosenAction(int chosenAction) {
-		this.chosenAction = chosenAction;
-	}
-	public int getAttack() {
-		return attack;
-	}
-	public void setAttack(int attack) {
-		this.attack = attack;
-	}
-	public int getGrab() {
-		return grab;
-	}
-	public void setGrab(int grab) {
-		this.grab = grab;
-	}
-	public int getCounter() {
-		return counter;
-	}
-	public void setCounter(int counter) {
-		this.counter = counter;
-	}
-	public int getDeflect() {
-		return deflect;
-	}
-	public void setDeflect(int deflect) {
-		this.deflect = deflect;
-	}
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
-	}
-	public int getHp() {
-		return hp;
-	}
-	public void setHp(int hp) {
-		this.hp = hp;
-	}
-	public void setSpriteIdle(String spriteIdle) {
-		this.spriteIdle = spriteIdle;
-	}
-	public String getSpriteIdle() {
-		return spriteIdle;
-	}
-	public String getSpriteHurt() {
-		return spriteHurt;
-	}
-	public void setSpriteHurt(String spriteHurt) {
-		this.spriteHurt = spriteHurt;
-	}
-	public boolean tookDamage() {
-		return tookDamage;
-	}
-	public void setTookDamage(boolean tookDamage) {
-		this.tookDamage = tookDamage;
-	}
-	
+
 	
 	// Helper method for displaying actions taken during combat
 	public static String printActions(Fighter a, Fighter b) {
@@ -164,7 +106,10 @@ public class Fighter {
 	public static String compareAction(Fighter first, Fighter second) {
 		
 		StringBuilder output = new StringBuilder();
+		
 		int damage = 0;
+		first.prevHp = first.hp;
+		second.prevHp = second.hp;
 		
 		
 		output.append(printActions(first,second)); // Printing what was done
@@ -337,6 +282,9 @@ public class Fighter {
 		case 8:
 			output += "You did your best. A is for affort!";
 			break;
+		case 9:
+			output += "Let's be a little more creative than that...";
+			break;				
 		case 10:
 			output += "Use the force, " + subject.name;
 			break;
@@ -374,6 +322,77 @@ public class Fighter {
 		return output + "\n";
 	}
 
+
+
+	
+	
+	
+	public int getChosenAction() {
+		return chosenAction;
+	}
+	public void setChosenAction(int chosenAction) {
+		this.chosenAction = chosenAction;
+	}
+	public int getAttack() {
+		return attack;
+	}
+	public void setAttack(int attack) {
+		this.attack = attack;
+	}
+	public int getGrab() {
+		return grab;
+	}
+	public void setGrab(int grab) {
+		this.grab = grab;
+	}
+	public int getCounter() {
+		return counter;
+	}
+	public void setCounter(int counter) {
+		this.counter = counter;
+	}
+	public int getDeflect() {
+		return deflect;
+	}
+	public void setDeflect(int deflect) {
+		this.deflect = deflect;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public int getHp() {
+		return hp;
+	}
+	public void setHp(int hp) {
+		this.hp = hp;
+	}
+	public void setSpriteIdle(String spriteIdle) {
+		this.spriteIdle = spriteIdle;
+	}
+	public String getSpriteIdle() {
+		return spriteIdle;
+	}
+	public String getSpriteHurt() {
+		return spriteHurt;
+	}
+	public void setSpriteHurt(String spriteHurt) {
+		this.spriteHurt = spriteHurt;
+	}
+	public boolean tookDamage() {
+		return tookDamage;
+	}
+	public void setTookDamage(boolean tookDamage) {
+		this.tookDamage = tookDamage;
+	}
+	public int getPrevHp() {
+		return prevHp;
+	}
+	public void setPrevHp(int prevHp) {
+		this.prevHp = prevHp;
+	}	
 
 
 }

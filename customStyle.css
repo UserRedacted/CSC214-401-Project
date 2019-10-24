@@ -1,5 +1,4 @@
 @font-face {
-    font-family: Fixedsys;
     src: url("../resources/fixedsys.ttf");
 }
 
@@ -17,17 +16,38 @@
     -fx-spacing: 10;
 }
 
+
 .text {   
-    -fx-font-size: 24px;
-	-fx-font-family: Fixedsys;
+	-fx-font-family: "Fixedsys Excelsior";
 }
 
 .text-field {
 	-fx-font-size: 24px;
+	-fx-font-family: "Fixedsys Excelsior";
     -fx-background-insets: 0,1,2,3,0;
 }
 
 
+.list-cell {
+    -fx-font-size: 24px;
+}
+
+.list-cell:filled:selected:focused, .list-cell:filled:selected {
+    -fx-background-color: #ffca0c;
+	-fx-text-fill: black;
+}
+.list-cell:filled:hover {
+    -fx-background-color: #ebeef0;
+	-fx-text-fill: black;
+}
+
+.choice-box .menu-item:focused { 
+    -fx-background-color: #ffca0c;
+	-fx-text-fill: black;
+}
+.choice-box .menu-item:focused > .label, .choice-box .menu-item > .label { 
+    -fx-text-fill: black; 
+}
 .choice-box {
 	 -fx-background-color: 
         linear-gradient(#ffd65b, #e68400),
@@ -35,7 +55,8 @@
         linear-gradient(#ffea6a, #efaa22),
         linear-gradient(#ffe657 0%, #f8c202 50%, #eea10b 100%),
         linear-gradient(from 0% 0% to 15% 50%, rgba(255,255,255,0.9), rgba(255,255,255,0));
-    -fx-background-insets: 0,1,2,3,0;
+    -fx-font-size: 24px;
+	-fx-background-insets: 0,1,2,3,0;
     -fx-padding: 5 5 5 5;
 }
 
@@ -48,7 +69,24 @@
         linear-gradient(from 0% 0% to 15% 50%, rgba(255,255,255,0.9), rgba(255,255,255,0));
     -fx-background-radius: 30;
     -fx-background-insets: 0,1,2,3,0;
-	-fx-text-fill: #654b00;
-    -fx-font-size: 24px;
+    -fx-font-size: 32px;
+    -fx-text-fill: #654b00;
     -fx-padding: 25 20 25 20;
 }
+
+
+.button:hover {
+	-fx-text-fill: white;
+}
+
+.button:pressed {
+	-fx-background-color: 
+        linear-gradient(#ffd65b, #e68400),
+        linear-gradient(#ffef84, #f2ba44),
+        linear-gradient(#ffea6a, #efaa22),
+        linear-gradient(#ffe657 100%, #f8c202 50%, #eea10b 0%),
+        linear-gradient(from 100% 100% to 85% 50%, rgba(255,255,255,0.9), rgba(255,255,255,0));
+}
+
+
+
