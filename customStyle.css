@@ -1,4 +1,5 @@
 @font-face {
+    font-family: 'Fixedsys Excelsior';
     src: url("../resources/fixedsys.ttf");
 }
 
@@ -7,7 +8,7 @@
 }
 
 #panel {
-    -fx-background-color: #ebeef0;
+    -fx-background-color: #dedede;
 	-fx-background-radius: 11;
 	-fx-border-color: black;
 	-fx-border-width: 5;
@@ -18,12 +19,12 @@
 
 
 .text {   
-	-fx-font-family: "Fixedsys Excelsior";
+    -fx-font-family: 'Fixedsys Excelsior';
 }
 
 .text-field {
 	-fx-font-size: 24px;
-	-fx-font-family: "Fixedsys Excelsior";
+	-fx-font-family: 'Fixedsys Excelsior';
     -fx-background-insets: 0,1,2,3,0;
 }
 
@@ -48,16 +49,30 @@
 .choice-box .menu-item:focused > .label, .choice-box .menu-item > .label { 
     -fx-text-fill: black; 
 }
+
 .choice-box {
-	 -fx-background-color: 
+    -fx-background-color: 
         linear-gradient(#ffd65b, #e68400),
         linear-gradient(#ffef84, #f2ba44),
         linear-gradient(#ffea6a, #efaa22),
         linear-gradient(#ffe657 0%, #f8c202 50%, #eea10b 100%),
         linear-gradient(from 0% 0% to 15% 50%, rgba(255,255,255,0.9), rgba(255,255,255,0));
     -fx-font-size: 24px;
-	-fx-background-insets: 0,1,2,3,0;
+    -fx-background-insets: 0,1,2,3,0;
     -fx-padding: 5 5 5 5;
+}
+
+.choice-box:pressed {
+    -fx-background-color: 
+        linear-gradient(#ffd65b, #e68400),
+        linear-gradient(#ffef84, #f2ba44),
+        linear-gradient(#ffea6a, #efaa22),
+        linear-gradient(#ffe657 100%, #f8c202 50%, #eea10b 0%),
+        linear-gradient(from 100% 100% to 85% 50%, rgba(255,255,255,0.9), rgba(255,255,255,0));
+}
+
+.choice-box:hover {
+    -fx-text-fill: white;
 }
 
 .button {
@@ -69,7 +84,7 @@
         linear-gradient(from 0% 0% to 15% 50%, rgba(255,255,255,0.9), rgba(255,255,255,0));
     -fx-background-radius: 30;
     -fx-background-insets: 0,1,2,3,0;
-    -fx-font-size: 32px;
+    -fx-font-size: 24px;
     -fx-text-fill: #654b00;
     -fx-padding: 25 20 25 20;
 }
@@ -80,7 +95,7 @@
 }
 
 .button:pressed {
-	-fx-background-color: 
+    -fx-background-color: 
         linear-gradient(#ffd65b, #e68400),
         linear-gradient(#ffef84, #f2ba44),
         linear-gradient(#ffea6a, #efaa22),

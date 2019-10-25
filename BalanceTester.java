@@ -14,8 +14,8 @@ public class BalanceTester {
 	public static void main(String[] args) {
 
 
-		p1 = (AI) players.getPlayers().get(4);
-		p2 = (AI) players.getPlayers().get(5);
+		p1 = (AI) players.getPlayers().get(2);
+		p2 = (AI) players.getPlayers().get(3);
 		
 		p1.setOpponent(p2);
 		p2.setOpponent(p1);
@@ -25,7 +25,9 @@ public class BalanceTester {
 		testAll("Blobert", 100000);
 		testAll("Zen", 100000);
 		testAll("Grubby", 100000);
-		testAll("Sir Fuzzilot", 100000);
+		testAll("Boomer", 100000);
+		testAll("Sir Fuzzy", 100000);
+
 
 	}
 
@@ -55,7 +57,7 @@ public class BalanceTester {
 			
 			if(p1.fighter.getHp() > 0) {
 				p1_won ++;
-			} else {
+			} else if(p2.fighter.getHp() > 0) {
 				p2_won ++;
 			}
 		}	
@@ -70,7 +72,7 @@ public class BalanceTester {
 	// and displays the win-rate.
 	private static void printResults(int numBattles) {
 		double percentWon;
-		percentWon = 100.0*p1_won/numBattles;
+		percentWon = 100.0*p1_won/(p1_won+p2_won);
 		System.out.println("\t" + p1.fighter.getName() + " wins " + p1_won + " / " +p2_won + " (" + percentWon + "%) of matches");
 	}
 

@@ -522,9 +522,8 @@ public class GameDisplay extends Application {
 		Button advance = new Button("[C] Continue");
 		advance.setMinWidth(250);
 		
-		if(battleFinished) {
+		if(battleFinished)
 			advance.setDisable(false);
-		}
 		else
 			advance.setDisable(true);
 
@@ -614,11 +613,17 @@ public class GameDisplay extends Application {
 		// Very important timer tasks
 		Timer timer = new Timer();
 
+		if(battleFinished) {
+			timer.schedule(new ChangeText(turnDisplay, "MATCH FINISHED!!"), 1500);
+			timer.schedule(new ChangeMusic(), 1500);
+		}
+		
 		if(turnNum > 1) {
 			countdown.setText(" . ");
 			timer.schedule(new ChangeText(countdown, ". ."), 500);
 			timer.schedule(new ChangeText(countdown, ". . ."), 1000);
 			timer.schedule(new ChangeText(countdown, "FIGHT!"), 1500);
+			
 			
 			timer.schedule(new ChangeText((Text)p1c.getChildren().get(1), ("HP: " + p1.getFighter().getHp())), 1500);
 			timer.schedule(new ChangeText((Text)p2c.getChildren().get(1), ("HP: " + p2.getFighter().getHp())), 1500);
@@ -711,6 +716,20 @@ public class GameDisplay extends Application {
 		}
 	}
 	
+	class ChangeMusic extends TimerTask {
+
+		@Override
+		public void run() {
+			musicPlayer.stop();
+			File song = new File("resources\\music\\BattleEnd.wav");
+			Media media = new Media(song.toURI().toString());
+			musicPlayer = new MediaPlayer(media);
+			musicPlayer.setVolume(musicVolume);
+			musicPlayer.setAutoPlay(true);
+			musicPlayer.setCycleCount(1000);
+		}
+		
+	}
 	
 	
 	// Helper method for reading key inputs of players during match
@@ -805,7 +824,7 @@ public class GameDisplay extends Application {
 			keys[3] = KeyCode.P;
 		}
 		
-		int buttonWidth = 300;
+		int buttonWidth = 350;
 	
 		VBox playerPanel = new VBox();
 		playerPanel.setId("panel");
@@ -825,10 +844,20 @@ public class GameDisplay extends Application {
 		Text fighterHealth = new Text(health);
 		fighterHealth.setFont(Font.loadFont(fixedsys, 48));
 
-		Button attack = new Button(keys[0] + ": Attack[" + p.getFighter().getAttack() + "]");
-		Button grab = new Button(keys[1] + ": Grab[" + p.getFighter().getGrab() + "]");
-		Button counter = new Button(keys[2] + ": Counter[" + p.getFighter().getCounter() + "]");
-		Button deflect = new Button(keys[3] + ": Deflect[" + p.getFighter().getDeflect() + "%]");
+		Button attack = new Button(keys[0] + ":Attack[" + p.getFighter().getAttack() + "]");
+		Button grab = new Button(keys[1] + ":Grab[" + p.getFighter().getGrab() + "]");
+		Button counter = new Button(keys[2] + ":Counter[" + p.getFighter().getCounter() + "]");
+		Button deflect = new Button();
+		
+		// Changing the deflect stat to a number based on the calculation
+		if(isLeft) {
+			int damage = (int)(0.01* p1.getFighter().getDeflect() * p2.getFighter().getGrab());
+			deflect.setText(keys[3] + ":Deflect[" + damage + "]");
+		}
+		else {
+			int damage = (int)(0.01* p2.getFighter().getDeflect() * p1.getFighter().getGrab());
+			deflect.setText(keys[3] + ":Deflect[" + damage + "]");
+		}
 		
 		attack.setMaxWidth(buttonWidth);
 		grab.setMaxWidth(buttonWidth);

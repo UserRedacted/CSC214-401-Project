@@ -54,21 +54,21 @@ public class Fighter {
 		return name;
 	}
 	
-	// Takes an integer 0-3 representing an action and changes it to
-	// a string to print to the screen
-	public String actionToString() {
-		switch(chosenAction) {
-		case 0:
-			return "attack";
-		case 1:
-			return "grab";
-		case 2:
-			return "counter";
-		case 3:
-			return "deflect";
+	public int getChosenActionStat(int chosenAction) {
+		if(chosenAction == 0) {
+			return attack;
 		}
-		return null;
-	}
+		if(chosenAction == 1) {
+			return grab;
+		}		
+		if(chosenAction == 2) {
+			return counter;
+		}
+		if(chosenAction == 3) {
+			return deflect;
+		}		
+		return 0;
+	}	
 
 	public String getChosenActionStat() {
 		String stat = "";
@@ -88,23 +88,52 @@ public class Fighter {
 	}
 	
 
-	
-	// Helper method for displaying actions taken during combat
-	public static String printActions(Fighter a, Fighter b) {
-		String output = "";
-		output += a.name + " " + a.actionToString() + "s [" + a.getChosenActionStat() + "] and ";
-		output += b.name + " " + b.actionToString() + "s [" + b.getChosenActionStat() + "]\n";
-		return output;
+	// Debuffs characters move after selected; incentivizes diverse combat style
+	public void debuff() {
+		double percentDebuff = 0.9;
+		
+		if(this.chosenAction == 0) {
+			this.attack *= percentDebuff;
+		}
+		if(this.chosenAction == 1) {
+			this.grab *= percentDebuff;
+		}
+		if(this.chosenAction == 2) {
+			this.counter *= percentDebuff;
+		}
+		if(this.chosenAction == 3) {
+			this.deflect *= percentDebuff;
+		}
 	}
 	
-	// Helper method for printing results of a turn of combat
-	public static String printDamage(Fighter loser, int damage) {
-		return "\t" + loser.name + " takes " + damage + "dmg!\n";
-	}	
+	
+	
+	
+	
+	
+	// STATIC METHODS
+	
+	
+	public static String actionToString(int chosenAction) {
+		switch(chosenAction) {
+		case 0:
+			return "attack";
+		case 1:
+			return "grab";
+		case 2:
+			return "counter";
+		case 3:
+			return "deflect";
+		}
+		return null;
+	}
+	
+	
+	
 	
 	// The brains of the combat system. Determines the winner/loser of a pair of actions
 	public static String compareAction(Fighter first, Fighter second) {
-		
+
 		StringBuilder output = new StringBuilder();
 		
 		int damage = 0;
@@ -117,17 +146,26 @@ public class Fighter {
 		
 		// If Player A and B both attack
 		if(first.chosenAction == 0 && second.chosenAction == 0) {
-				
-				first.tookDamage = true;
-				second.tookDamage = true;
 			
-				damage = first.attack;
+			if(first.attack > second.attack) {
+				
+				first.tookDamage = false;
+				second.tookDamage = true;
+				
+				damage = first.attack - second.attack;
 				second.hp -= damage;
 				output.append(printDamage(second, damage));
+			} else if(second.attack > first.attack) {
 				
-				damage = second.attack;
+				first.tookDamage = true;
+				second.tookDamage = false;
+				
+				damage = second.attack - first.attack;
 				first.hp -= damage;
 				output.append(printDamage(first, damage));
+			} else {
+				output.append("\tThe attacks cancel out!\n");
+			}
 
 		}
 		
@@ -166,13 +204,18 @@ public class Fighter {
 		// If Player A attacks and Player B grabs
 		else if(first.chosenAction == 0 && second.chosenAction == 1) {
 			
-			first.tookDamage = false;
-			second.tookDamage = true;
 			
+			first.tookDamage = true;
+			second.tookDamage = true;
+		
 			damage = first.attack;
 			second.hp -= damage;
-					
 			output.append(printDamage(second, damage));
+			
+			damage = second.grab;
+			first.hp -= damage;
+			output.append(printDamage(first, damage));
+		
 		}
 		
 		// If Player A attacks and Player B counters
@@ -235,12 +278,45 @@ public class Fighter {
 		else {
 			return compareAction(second, first);
 		}
-		return output.toString();
 		
+		first.debuff();
+		second.debuff();
+		
+		return output.toString();
+	
 	}
 
-	//Prints one of many humorous messages indicating that nothing happened on a given round.
-	public static String printFailState(Fighter first, Fighter second) {
+
+	// Helper method. Private method for printing a single action
+	private String printAction() {
+		switch(chosenAction) {
+		case 0:
+			return "attack";
+		case 1:
+			return "grab";
+		case 2:
+			return "counter";
+		case 3:
+			return "deflect";
+		}
+		return null;
+	}
+
+	// Helper method for displaying actions taken during combat
+	private static String printActions(Fighter a, Fighter b) {
+		String output = "";
+		output += a.name + " " + a.printAction() + "s [" + a.getChosenActionStat() + "] and ";
+		output += b.name + " " + b.printAction() + "s [" + b.getChosenActionStat() + "]\n";
+		return output;
+	}
+	
+	// Helper method for printing results of a turn of combat
+	private static String printDamage(Fighter loser, int damage) {
+		return "\t" + loser.name + " takes " + damage + "dmg!\n";
+	}	
+
+	//Helper method. Prints one of many humorous messages indicating that nothing happened on a given round.
+	private static String printFailState(Fighter first, Fighter second) {
 		String output = "\t";
 		
 		
@@ -325,7 +401,7 @@ public class Fighter {
 
 
 	
-	
+	// SETTERS AND GETTERS
 	
 	public int getChosenAction() {
 		return chosenAction;
@@ -392,7 +468,8 @@ public class Fighter {
 	}
 	public void setPrevHp(int prevHp) {
 		this.prevHp = prevHp;
-	}	
+	}
+
 
 
 }
