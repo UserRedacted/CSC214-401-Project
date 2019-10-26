@@ -51,6 +51,10 @@ public class FighterList {
 		sirFuzzilot.setSpriteHurt("resources\\sprites\\SirFuzzilotHurt.gif");
 		fighters.add(sirFuzzilot);
 		
+		Fighter shifty = new Fighter("Shifty", 255, 85, 75, 70, 130);
+		shifty.setSpriteIdle("resources\\sprites\\Shifty.gif");
+		shifty.setSpriteHurt("resources\\sprites\\ShiftyHurt.gif");
+		fighters.add(shifty);
 		
 	}
 	

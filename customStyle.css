@@ -9,7 +9,7 @@
 
 #panel {
     -fx-background-color: #dedede;
-	-fx-background-radius: 11;
+	-fx-background-radius: 10;
 	-fx-border-color: black;
 	-fx-border-width: 5;
 	-fx-border-radius: 10;
@@ -86,7 +86,7 @@
     -fx-background-insets: 0,1,2,3,0;
     -fx-font-size: 24px;
     -fx-text-fill: #654b00;
-    -fx-padding: 25 20 25 20;
+    -fx-padding: 15 15 15 15;
 }
 
 

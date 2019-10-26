@@ -63,7 +63,6 @@ public class AI extends Player {
 	public int makeDecision(int difficulty) {
 		opponentActions[front%5] = new Integer(opponent.getFighter().getChosenAction());
 		front++;
-		
 		if(difficulty == 1) {
 			return decideNormal();
 		}
@@ -82,24 +81,18 @@ public class AI extends Player {
 	// Decision archetypes with room for unpredictability
 	private int decideHard() {
 		int favoriteAction = calculateFavoriteAction();
-		System.out.println("My opponent's favorite action is " + Fighter.actionToString(favoriteAction));
 		int choice = (int)(Math.random()*5);
 		
 		switch(choice) {
 		case 0:
-			System.out.println("I will counter my opponent's last move, " + Fighter.actionToString(opponentActions[opponentActions.length-1]));
 			return counterLast();
 		case 1:
-			System.out.println("I will counter my opponent's favorite move, " + Fighter.actionToString(favoriteAction));
 			return counterFavorite(favoriteAction);
 		case 2:
-			System.out.println("I will copy my opponent's last move, " + Fighter.actionToString(opponentActions[opponentActions.length-1]));
 			return mimicLast();
 		case 3:
-			System.out.println("I will use my strongest move, " + Fighter.actionToString(strongestMove()));
 			return strongestMove();
 		case 4:
-			System.out.println("I will perform a random move...");
 			return (int)(Math.random()*4);
 		}
 		return 0;		
@@ -113,18 +106,16 @@ public class AI extends Player {
 		int quantityActionAtIndex = 0; // Number of times player has selected an action at a given indexs of numAction
 
 		//Loading the number of times a player has chosen each action
-			for(int action = 0; action < opponentActions.length; action++) {
-				if(opponentActions[action] > 0)
-					numAction[opponentActions[action]] += 1;
-
+			for(int i = 0; i < opponentActions.length; i++) {
+				if(opponentActions[i] >= 0)
+					numAction[opponentActions[i]] ++;
 			}	
 		
 		// Determining the favorite action
-		for(int a = 0; a < numAction.length; a++) {
-			System.out.println("\t" + numAction[a]);
-			if(numAction[a] > quantityActionAtIndex) {
-				favoriteAction = a;
-				quantityActionAtIndex = numAction[a];
+		for(int i = 0; i < numAction.length; i++) {
+			if(numAction[i] > quantityActionAtIndex) {
+				favoriteAction = i;
+				quantityActionAtIndex = numAction[i];
 			}
 		}
 		
@@ -137,7 +128,7 @@ public class AI extends Player {
 	private int strongestMove() {
 		Fighter f = new Fighter(this.fighter);
 		// List of numerical moves 
-		int[] actions = {f.getAttack(), f.getGrab(), f.getCounter(), f.getDeflect()*opponent.getFighter().getGrab()};
+		int[] actions = {f.getAttack(), f.getGrab(), f.getCounter(), (int)(0.01*f.getDeflect()*opponent.getFighter().getGrab())};
 		int strongestAction = 0;
 	
 			for(int i = 1; i < actions.length; i++) {

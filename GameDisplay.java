@@ -7,12 +7,14 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ListView;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -61,6 +63,8 @@ public class GameDisplay extends Application {
 	@Override
 	public void start(Stage stage)  {
 
+		stage.setMaximized(true);
+		stage.setFullScreen(true);
 		
 		// NOTE: This can be used as a template for playing music and sound effects
 		File song = new File("resources\\music\\Theme.wav");
@@ -148,96 +152,165 @@ public class GameDisplay extends Application {
 		content.getChildren().add(playerInfo);	
 		
 		
+		
+		Button quit = new Button("Quit");
+		quit.setMaxWidth(buttonWidth);
+		content.getChildren().add(quit);	
+	    
+		quit.setOnAction(actionEvent -> Platform.exit());
+
+		
 		return frame;
 	}
 	
 	
 	// Menu for users to log in, out, create user profiles, etc.
-	public HBox loginMenu() {
+	public BorderPane loginMenu() {
+		
+		
+		BorderPane frame = new BorderPane();
+		
 		
 		int buttonWidth = 300;
 		
-		
-		HBox root = new HBox();
-		root.setId("panel");
-		root.setAlignment(Pos.CENTER);
-		
-		// Panel for TextFields
-		VBox dataEntry = new VBox();
-		dataEntry.setId("panel");
+		// Main panel
+		VBox body = new VBox();
+		body.setAlignment(Pos.CENTER);
+		body.setMaxWidth(800);
+		body.setSpacing(10);
+		body.setPadding(new Insets(20, 20, 20, 20));
 		
 		
-		//Logging in
+		
+		// Header
+		
+		VBox header = new VBox();
+		header.setId("panel");
+		header.setAlignment(Pos.CENTER);
+		
+		Text title = new Text("Load/Create a Player Profile");
+		title.setFont(Font.loadFont(fixedsys, 72));
+		
+		Text subHeading = new Text("View battle logs, track win rates, and more!\n\n");
+		subHeading.setFont(Font.loadFont(fixedsys, 24));
+
+		Text messageIndicator = new Text("");
+		messageIndicator.setFont(Font.loadFont(fixedsys, 24));
+
+		
+		// Logging in
+		
+		HBox logInPanel = new HBox();
+		logInPanel.setId("panel");
+		logInPanel.setAlignment(Pos.CENTER);
+		
+		VBox logIn = new VBox();
+		logIn.setSpacing(10);
+		logIn.setMinWidth(300);
+
 		Text loginHeader = new Text("LOG IN");
 		loginHeader.setFont(Font.loadFont(fixedsys, 32));
 		
 		TextField userLogin = new TextField();
 		userLogin.setPromptText("Enter UserName");
 		
-		TextField userPass = new TextField();
+		PasswordField userPass = new PasswordField();
 		userPass.setPromptText("Enter Password");
+
 		
-		//Logging out
+		// Logging out
+		
+		HBox logOutPanel = new HBox();
+		logOutPanel.setId("panel");
+		logOutPanel.setAlignment(Pos.CENTER);
+		
+		VBox logOut = new VBox();
+		logOut.setSpacing(10);
+		logOut.setMinWidth(300);
+
 		Text logoutHeader = new Text("LOG OUT");
 		logoutHeader.setFont(Font.loadFont(fixedsys, 32));
 		
 		TextField userLogout = new TextField();
 		userLogout.setPromptText("Enter UserName");
 		
+		
+		
 		// Creating a new profile
+		
+		HBox createUserPanel = new HBox();
+		createUserPanel.setId("panel");
+		createUserPanel.setAlignment(Pos.CENTER);
+	
+		VBox createUser = new VBox();
+		createUser.setSpacing(10);
+		createUser.setMinWidth(300);
+
 		Text creationHeader = new Text("CREATE A NEW USER");
 		creationHeader.setFont(Font.loadFont(fixedsys, 32));
 		
-		TextField userCreate = new TextField();
-		userCreate.setPromptText("Enter a UserName");
+		TextField newUserName = new TextField();
+		newUserName.setPromptText("Enter a UserName");
 		
-		TextField userPassSetup = new TextField();
+		PasswordField userPassSetup = new PasswordField();
 		userPassSetup.setPromptText("Enter a Password");
 		
-		TextField userPassConfirm = new TextField();
+		PasswordField userPassConfirm = new PasswordField();
 		userPassConfirm.setPromptText("Confirm Password");
 		
-		dataEntry.getChildren().add(loginHeader);
-		dataEntry.getChildren().add(userLogin);
-		dataEntry.getChildren().add(userPass);
-		dataEntry.getChildren().add(logoutHeader);
-		dataEntry.getChildren().add(userLogout);
-		dataEntry.getChildren().add(creationHeader);
-		dataEntry.getChildren().add(userCreate);
-		dataEntry.getChildren().add(userPassSetup);
-		dataEntry.getChildren().add(userPassConfirm);
 
-		//Panel for Button controls
-		VBox actionConfirm = new VBox();
-		actionConfirm.setId("panel");
-		actionConfirm.setSpacing(50);
-		
+		// Buttons
 		Button confirmLogin = new Button("Confirm Log-in");
-		confirmLogin.setMaxWidth(buttonWidth);
+		confirmLogin.setMinWidth(buttonWidth);
 		
-		Button confirmLogout = new Button("Confirm Log-out");
-		confirmLogout.setMaxWidth(buttonWidth);
+		Button confirmLogOut = new Button("Confirm Log-out");
+		confirmLogOut.setMinWidth(buttonWidth);
 		
 		Button confirmCreation = new Button("Confirm Creation");
-		confirmCreation.setMaxWidth(buttonWidth);
+		confirmCreation.setMinWidth(buttonWidth);
 
 		Button backToMenu = new Button("Back to Menu");
-		backToMenu.setMaxWidth(buttonWidth);
+		backToMenu.setMinWidth(buttonWidth);
 
 		backToMenu.setOnMouseClicked(e -> {
 			scene.setRoot(mainMenu());
 		});
 		
-		actionConfirm.getChildren().add(confirmLogin);
-		actionConfirm.getChildren().add(confirmLogout);
-		actionConfirm.getChildren().add(confirmCreation);
-		actionConfirm.getChildren().add(backToMenu);
+		// Setup
 
-	
-		root.getChildren().add(dataEntry);
-		root.getChildren().add(actionConfirm);
+		header.getChildren().add(title);
+		header.getChildren().add(subHeading);
+		header.getChildren().add(messageIndicator);
 		
-		return root;
+		logIn.getChildren().add(loginHeader);
+		logIn.getChildren().add(userLogin);
+		logIn.getChildren().add(userPass);
+		
+		logInPanel.getChildren().add(logIn);
+		logInPanel.getChildren().add(confirmLogin);
+		
+		logOut.getChildren().add(logoutHeader);
+		logOut.getChildren().add(userLogout);
+		
+		logOutPanel.getChildren().add(logOut);
+		logOutPanel.getChildren().add(confirmLogOut);
+
+		createUser.getChildren().add(creationHeader);
+		createUser.getChildren().add(newUserName);
+		createUser.getChildren().add(userPassSetup);
+		createUser.getChildren().add(userPassConfirm);
+
+		createUserPanel.getChildren().add(createUser);
+		createUserPanel.getChildren().add(confirmCreation);
+
+		body.getChildren().add(header);
+		body.getChildren().add(logInPanel);
+		body.getChildren().add(logOutPanel);
+		body.getChildren().add(createUserPanel);
+		body.getChildren().add(backToMenu);
+
+		frame.setCenter(body);
+		return frame;
 	}
 	
 	
@@ -716,6 +789,7 @@ public class GameDisplay extends Application {
 		}
 	}
 	
+	//Method for scheduling end of battle music
 	class ChangeMusic extends TimerTask {
 
 		@Override
