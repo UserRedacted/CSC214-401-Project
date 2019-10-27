@@ -47,7 +47,8 @@ public class GameDisplay extends Application {
 	
 	Player p1;
 	Player p2;
-	
+	PlayerList playerList = new PlayerList();
+
 	String turnDetails;
 	
 	// Global turn number of a match
@@ -100,7 +101,7 @@ public class GameDisplay extends Application {
 	
 	// Function for controlling main menu interface
 	public BorderPane mainMenu() {
-		
+
 		int buttonWidth = 500; // int for controlling width of all buttons
 
 		BorderPane frame = new BorderPane();
@@ -191,7 +192,7 @@ public class GameDisplay extends Application {
 		Text title = new Text("Load/Create a Player Profile");
 		title.setFont(Font.loadFont(fixedsys, 72));
 		
-		Text subHeading = new Text("View battle logs, track win rates, and more!\n\n");
+		Text subHeading = new Text("View battle logs, track win rates, and more!\n");
 		subHeading.setFont(Font.loadFont(fixedsys, 24));
 
 		Text messageIndicator = new Text("");
@@ -249,8 +250,8 @@ public class GameDisplay extends Application {
 		Text creationHeader = new Text("CREATE A NEW USER");
 		creationHeader.setFont(Font.loadFont(fixedsys, 32));
 		
-		TextField newUserName = new TextField();
-		newUserName.setPromptText("Enter a UserName");
+		TextField newUsername = new TextField();
+		newUsername.setPromptText("Enter a UserName");
 		
 		PasswordField userPassSetup = new PasswordField();
 		userPassSetup.setPromptText("Enter a Password");
@@ -259,22 +260,118 @@ public class GameDisplay extends Application {
 		userPassConfirm.setPromptText("Confirm Password");
 		
 
-		// Buttons
-		Button confirmLogin = new Button("Confirm Log-in");
-		confirmLogin.setMinWidth(buttonWidth);
+		// Buttons, with event listeners
 		
+		
+		
+		// Log in button
+		Button confirmLogIn = new Button("Confirm Log-in");
+		confirmLogIn.setMinWidth(buttonWidth);
+		
+		confirmLogIn.setOnMouseClicked(e -> {
+			String username = userLogin.getText();
+			String password = userPass.getText();
+			
+			boolean userFound = false;
+			boolean passwordCorrect = true;
+			
+			for(int i = 0; i < playerList.getUsers().size(); i++) {
+				if(playerList.getUsers().get(i).getName().equals(username)) {
+					userFound = true;
+					if (playerList.getUsers().get(i).getPassword().equals(password)) {
+						passwordCorrect = true;
+						playerList.getUsers().get(i).setLoggedIn("true");
+						playerList.loadPrivatePlayers();
+						messageIndicator.setText("User \"" + username + "\" successfully logged in!");
+
+					} else {
+						passwordCorrect = false;
+					}
+				}
+			}
+			
+			if(!userFound) {
+				messageIndicator.setText("No user with name \"" + username + "\" found.");
+			}
+			if(!passwordCorrect) {
+				messageIndicator.setText("Password for user \"" + username + "\" was incorrect.");
+			}
+		});
+		
+		
+		
+		
+		// Log out button
 		Button confirmLogOut = new Button("Confirm Log-out");
 		confirmLogOut.setMinWidth(buttonWidth);
 		
+		confirmLogOut.setOnMouseClicked(e -> {
+			String username = userLogout.getText();
+			boolean userFound = false;
+			
+			for(int i = 0; i < playerList.getUsers().size(); i ++) {
+				if(playerList.getUsers().get(i).getName().equals(username)) {
+					playerList.getUsers().get(i).setLoggedIn("false");
+					messageIndicator.setText("Successfully logged out user " + username + "!");
+					playerList.loadPrivatePlayers();
+					userFound = true;
+				}
+			}
+			
+			if(!userFound) {
+				messageIndicator.setText("No user with name \"" + username + "\" found.");
+			}
+			
+		});
+		
+		
+		
+		// Action to be taken when user attempts to create a new user profile
 		Button confirmCreation = new Button("Confirm Creation");
 		confirmCreation.setMinWidth(buttonWidth);
-
+	
+		confirmCreation.setOnMouseClicked(e -> {
+			String username = newUsername.getText();
+			String password1 = userPassSetup.getText();
+			String password2 = userPassConfirm.getText();
+			
+			if(!playerList.isUsernameTaken(username)) {
+				messageIndicator.setText("USER CREATION FAILED. ERROR: Username is already taken.");
+			}
+			else if(!PlayerList.isValidUsername(username)) {
+				String output = "USER CREATION FAILED. ERROR: Username not acceptable.\n";
+				output += "\t1. Username must be 3-12 characters long\n";
+				output += "\t2. Username must start with a letter\n";
+				output += "\t3. Username must not contain special characters/spaces";
+				messageIndicator.setText(output);
+			}
+			else if(!password1.equals(password2)) {
+				messageIndicator.setText("USER CREATION FAILED. ERROR: Passwords do not match.");
+			} 
+			else if(!PlayerList.isValidPassword(password1)) {
+				String output = "USER CREATION FAILED. ERROR: Password not acceptable.\n";
+				output += "\t1. Password must be 4-20 characters long\n";
+				output += "\t2. Password must not contain commas or spaces";
+				messageIndicator.setText(output);	
+			}
+			else {
+				messageIndicator.setText("User successfully created! You can now select your user from the battle setup menu!");
+				playerList.addUser(username, password1);
+				playerList.loadPrivatePlayers();
+			}
+		});
+		
+		
+		
+		
 		Button backToMenu = new Button("Back to Menu");
 		backToMenu.setMinWidth(buttonWidth);
 
 		backToMenu.setOnMouseClicked(e -> {
 			scene.setRoot(mainMenu());
 		});
+		
+		
 		
 		// Setup
 
@@ -287,7 +384,7 @@ public class GameDisplay extends Application {
 		logIn.getChildren().add(userPass);
 		
 		logInPanel.getChildren().add(logIn);
-		logInPanel.getChildren().add(confirmLogin);
+		logInPanel.getChildren().add(confirmLogIn);
 		
 		logOut.getChildren().add(logoutHeader);
 		logOut.getChildren().add(userLogout);
@@ -296,7 +393,7 @@ public class GameDisplay extends Application {
 		logOutPanel.getChildren().add(confirmLogOut);
 
 		createUser.getChildren().add(creationHeader);
-		createUser.getChildren().add(newUserName);
+		createUser.getChildren().add(newUsername);
 		createUser.getChildren().add(userPassSetup);
 		createUser.getChildren().add(userPassConfirm);
 
@@ -477,14 +574,12 @@ public class GameDisplay extends Application {
 		
 		// ChoiceBox for choosing a player profile from a list of User Names and public profiles
 		ChoiceBox<Player> playerProfile = new ChoiceBox<>();
-		playerProfile.setMinWidth(200);
+		playerProfile.setMinWidth(300);
 		playerProfile.setCenterShape(true);
 		//playerProfile
 		playerVBox.getChildren().add(playerProfile);
 		
-		//Set up the ChoiceBox to be filled with player profiles
-		PlayerList playerList = new PlayerList();
-		
+		//Set up the ChoiceBox to be filled with player profiles		
 		for(Player p: playerList.getPlayers()) {
 			playerProfile.getItems().add(p);
 		}

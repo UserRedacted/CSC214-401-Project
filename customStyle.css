@@ -8,7 +8,7 @@
 }
 
 #panel {
-    -fx-background-color: #dedede;
+	-fx-background-image: url("../resources/images/stone.png");
 	-fx-background-radius: 10;
 	-fx-border-color: black;
 	-fx-border-width: 5;
