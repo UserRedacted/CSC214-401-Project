@@ -37,9 +37,8 @@ public class GameDisplay extends Application {
 	
 	// Objects for playing sounds through JavaFX
 	static MediaPlayer musicPlayer;
-	static double musicVolume = 0.5;
-	static MediaPlayer soundPlayer;
-	static FileInputStream imageViewer;
+	static SoundPlayer soundPlayer = new SoundPlayer();
+	static double musicVolume = 0.3;
 	static File customFont = new File("resources/fixedsys.ttf"); // Custom font
 	static String fixedsys = customFont.toURI().toString(); //URI path to the custom font, Fixedsys Regular
 	// Placeholder Player objects for whoever is fighting in a match
@@ -59,6 +58,7 @@ public class GameDisplay extends Application {
 	public static void main(String[] args) {
 		launch(args);
 	}
+	
 	
 	// JavaFX Window Runner
 	@Override
@@ -105,60 +105,93 @@ public class GameDisplay extends Application {
 		int buttonWidth = 500; // int for controlling width of all buttons
 
 		BorderPane frame = new BorderPane();
-		
-		VBox content = new VBox();
-		content.setId("panel");
-		content.setAlignment(Pos.TOP_CENTER);
-		content.setSpacing(10);
-		content.setPadding(new Insets(10, 10, 10, 10));
-		content.setMaxWidth(450);
-		
 		frame.setPadding(new Insets(50, 50, 50, 50));
-		frame.setCenter(content);
 
 		
-		// Image Experimentation
-		try {
-			// Logo GIF
-			imageViewer = new FileInputStream(new File("resources\\images\\logo.gif"));
-			Image image = new Image(imageViewer);
-			ImageView titleHolder = new ImageView();
-			titleHolder.setImage(image);
-			content.getChildren().add(titleHolder);
-		} catch (FileNotFoundException e1) {
-			e1.printStackTrace();
-		}
+		HBox content = new HBox();
+		content.setAlignment(Pos.CENTER);
+		content.setSpacing(50);
 		
+		// Children of HBox content
 		
-		//		BUTTON CONTROLS			
-		Button beginMatch = new Button("Start a Match!");
-		beginMatch.setMaxWidth(buttonWidth);		
-		content.getChildren().add(beginMatch);
-		
-		beginMatch.setOnMouseClicked(e -> {
-			scene.setRoot(matchSetupMenu());
-		});
-				
-		Button loadUser = new Button("Load/Create UserName");
-		loadUser.setMaxWidth(buttonWidth);
-		content.getChildren().add(loadUser);
-		
-		loadUser.setOnMouseClicked(e -> {
-			scene.setRoot(loginMenu());
-		});
+		// FighterList used exclusively to display a random sprite on main menu
+		FighterList spriteView = new FighterList();
 			
+			// Left image
+			File randomFighterLeft = new File(spriteView.getFighters().get((int)(Math.random()*spriteView.getFighters().size())).getSpriteIdle());
+			Image spriteLeft = new Image(randomFighterLeft.toURI().toString());
+			ImageView spriteLeftContainer = new ImageView();
+			spriteLeftContainer.setImage(spriteLeft);
+			
+			// Right image
+			File randomFighterRight = new File(spriteView.getFighters().get((int)(Math.random()*spriteView.getFighters().size())).getSpriteIdle());
+			Image spriteRight = new Image(randomFighterRight.toURI().toString());
+			ImageView spriteRightContainer = new ImageView();
+			spriteRightContainer.setImage(spriteRight);
+			
+			
+			VBox menu = new VBox();
+			menu.setId("panel");
+			menu.setAlignment(Pos.TOP_CENTER);
+			menu.setMaxWidth(450);
+			
+			// Children of VBox menu
+			
+				// Image Display
+				File image = new File("resources\\images\\logo.gif");
+				Image logo = new Image(image.toURI().toString());
+				ImageView titleHolder = new ImageView();
+				titleHolder.setImage(logo);
+				menu.getChildren().add(titleHolder);
+				
+				
+				//		BUTTON CONTROLS			
+				Button beginMatch = new Button("Start a Match!");
+				beginMatch.setMaxWidth(buttonWidth);		
+				soundPlayer.playOnHover(beginMatch);
+				
+				beginMatch.setOnMouseClicked(e -> {
+					scene.setRoot(matchSetupMenu());
+				});
+						
+				Button loadUser = new Button("Load/Create UserName");
+				loadUser.setMaxWidth(buttonWidth);
+				soundPlayer.playOnHover(loadUser);
+
+				loadUser.setOnMouseClicked(e -> {
+					scene.setRoot(loginMenu());
+				});
+					
+				
+				Button playerInfo = new Button("View Player Information");
+				playerInfo.setMaxWidth(buttonWidth);
+				soundPlayer.playOnHover(playerInfo);
+
+				playerInfo.setOnMouseClicked(e -> {
+					scene.setRoot(informationMenu());
+				});
+				
+				
+				Button quit = new Button("Quit");
+				quit.setMaxWidth(buttonWidth);
+				soundPlayer.playOnHover(quit);
+
+				quit.setOnAction(actionEvent -> Platform.exit());
+				
 		
-		Button playerInfo = new Button("View Player Information");
-		playerInfo.setMaxWidth(buttonWidth);
-		content.getChildren().add(playerInfo);	
 		
 		
+		menu.getChildren().add(beginMatch);
+		menu.getChildren().add(loadUser);
+		menu.getChildren().add(playerInfo);	
+		menu.getChildren().add(quit);	
+
 		
-		Button quit = new Button("Quit");
-		quit.setMaxWidth(buttonWidth);
-		content.getChildren().add(quit);	
-	    
-		quit.setOnAction(actionEvent -> Platform.exit());
+		content.getChildren().add(spriteLeftContainer);
+		content.getChildren().add(menu);
+		content.getChildren().add(spriteRightContainer);
+
+		frame.setCenter(content);
 
 		
 		return frame;
@@ -267,7 +300,8 @@ public class GameDisplay extends Application {
 		// Log in button
 		Button confirmLogIn = new Button("Confirm Log-in");
 		confirmLogIn.setMinWidth(buttonWidth);
-		
+		soundPlayer.playOnHover(confirmLogIn);
+
 		confirmLogIn.setOnMouseClicked(e -> {
 			String username = userLogin.getText();
 			String password = userPass.getText();
@@ -283,6 +317,7 @@ public class GameDisplay extends Application {
 						playerList.getUsers().get(i).setLoggedIn("true");
 						playerList.loadPrivatePlayers();
 						messageIndicator.setText("User \"" + username + "\" successfully logged in!");
+						soundPlayer.playSuccess();
 
 					} else {
 						passwordCorrect = false;
@@ -292,9 +327,11 @@ public class GameDisplay extends Application {
 			
 			if(!userFound) {
 				messageIndicator.setText("No user with name \"" + username + "\" found.");
+				soundPlayer.playFailure();
 			}
 			if(!passwordCorrect) {
 				messageIndicator.setText("Password for user \"" + username + "\" was incorrect.");
+				soundPlayer.playFailure();
 			}
 		});
 		
@@ -304,7 +341,8 @@ public class GameDisplay extends Application {
 		// Log out button
 		Button confirmLogOut = new Button("Confirm Log-out");
 		confirmLogOut.setMinWidth(buttonWidth);
-		
+		soundPlayer.playOnHover(confirmLogOut);
+
 		confirmLogOut.setOnMouseClicked(e -> {
 			String username = userLogout.getText();
 			boolean userFound = false;
@@ -313,6 +351,8 @@ public class GameDisplay extends Application {
 				if(playerList.getUsers().get(i).getName().equals(username)) {
 					playerList.getUsers().get(i).setLoggedIn("false");
 					messageIndicator.setText("Successfully logged out user " + username + "!");
+					soundPlayer.playSuccess();
+
 					playerList.loadPrivatePlayers();
 					userFound = true;
 				}
@@ -320,6 +360,7 @@ public class GameDisplay extends Application {
 			
 			if(!userFound) {
 				messageIndicator.setText("No user with name \"" + username + "\" found.");
+				soundPlayer.playFailure();
 			}
 			
 		});
@@ -329,7 +370,8 @@ public class GameDisplay extends Application {
 		// Action to be taken when user attempts to create a new user profile
 		Button confirmCreation = new Button("Confirm Creation");
 		confirmCreation.setMinWidth(buttonWidth);
-	
+		soundPlayer.playOnHover(confirmCreation);
+
 		confirmCreation.setOnMouseClicked(e -> {
 			String username = newUsername.getText();
 			String password1 = userPassSetup.getText();
@@ -337,8 +379,10 @@ public class GameDisplay extends Application {
 			
 			if(!playerList.isUsernameTaken(username)) {
 				messageIndicator.setText("USER CREATION FAILED. ERROR: Username is already taken.");
+				soundPlayer.playFailure();
 			}
 			else if(!PlayerList.isValidUsername(username)) {
+				soundPlayer.playFailure();
 				String output = "USER CREATION FAILED. ERROR: Username not acceptable.\n";
 				output += "\t1. Username must be 3-12 characters long\n";
 				output += "\t2. Username must start with a letter\n";
@@ -346,15 +390,18 @@ public class GameDisplay extends Application {
 				messageIndicator.setText(output);
 			}
 			else if(!password1.equals(password2)) {
+				soundPlayer.playFailure();
 				messageIndicator.setText("USER CREATION FAILED. ERROR: Passwords do not match.");
 			} 
 			else if(!PlayerList.isValidPassword(password1)) {
+				soundPlayer.playFailure();
 				String output = "USER CREATION FAILED. ERROR: Password not acceptable.\n";
 				output += "\t1. Password must be 4-20 characters long\n";
 				output += "\t2. Password must not contain commas or spaces";
 				messageIndicator.setText(output);	
 			}
 			else {
+				soundPlayer.playSuccess();
 				messageIndicator.setText("User successfully created! You can now select your user from the battle setup menu!");
 				playerList.addUser(username, password1);
 				playerList.loadPrivatePlayers();
@@ -366,6 +413,7 @@ public class GameDisplay extends Application {
 		
 		Button backToMenu = new Button("Back to Menu");
 		backToMenu.setMinWidth(buttonWidth);
+		soundPlayer.playOnHover(backToMenu);
 
 		backToMenu.setOnMouseClicked(e -> {
 			scene.setRoot(mainMenu());
@@ -409,6 +457,120 @@ public class GameDisplay extends Application {
 		frame.setCenter(body);
 		return frame;
 	}
+	
+	
+	
+	// Menu for users to view information on a specific user profile
+	public BorderPane informationMenu() {
+		
+		BorderPane frame = new BorderPane();
+		frame.setPadding(new Insets(20, 20, 20, 20));
+		
+		VBox content = new VBox();
+		content.setId("panel");
+		content.setMaxWidth(800);
+		content.setAlignment(Pos.CENTER);
+		
+		// Children of Content
+			
+			HBox userHBox = new HBox();
+			userHBox.setSpacing(20);
+			userHBox.setAlignment(Pos.CENTER);
+				
+			// Children of userHBox
+			
+				Text userSelect = new Text("Select user: ");
+				userSelect.setFont(Font.loadFont(fixedsys, 32));
+	
+				ChoiceBox<User> users = new ChoiceBox<User>();
+				users.setMinWidth(200);
+
+				for(int i = 0; i < playerList.getUsers().size(); i++) {
+					if(playerList.getUsers().get(i).getLoggedIn().equals("true")) {
+						users.getItems().add(playerList.getUsers().get(i));
+					}
+				}
+		
+			
+			HBox battleHBox = new HBox();
+			battleHBox.setSpacing(20);
+			battleHBox.setAlignment(Pos.CENTER);
+			
+			// Children of battleHBox
+				Text battleSelect = new Text("Select battle: ");
+				battleSelect.setFont(Font.loadFont(fixedsys, 32));
+
+				ChoiceBox<BattleLog> battleLogs = new ChoiceBox<BattleLog>();
+				battleLogs.setMinWidth(200);
+				
+				
+				
+			HBox information = new HBox();
+			information.setAlignment(Pos.CENTER);
+			information.setSpacing(10);
+			
+			// Children of HBox information
+		
+				ListView<String> battleLogText = new ListView<String>();
+				
+				
+				VBox statistics = new VBox();
+				statistics.setSpacing(5);
+				
+				// Children of VBox statistics
+					Text header = new Text("Statistics:\n");
+					header.setFont(Font.loadFont(fixedsys, 32));
+	
+					Text username = new Text("Username: ");
+					username.setFont(Font.loadFont(fixedsys, 32));
+	
+					Text playedGames = new Text("Played Games: ");
+					playedGames.setFont(Font.loadFont(fixedsys, 32));
+	
+					Text wonGames = new Text("Won Games: ");
+					wonGames.setFont(Font.loadFont(fixedsys, 32));
+	
+					Text wlRatio = new Text("Win/Loss Ratio: ");
+					wlRatio.setFont(Font.loadFont(fixedsys, 32));
+
+			
+			
+			Button backToMenu = new Button("Back to Menu");
+			backToMenu.setMinWidth(300);
+			soundPlayer.playOnHover(backToMenu);
+			backToMenu.setOnMouseClicked(e -> {
+				scene.setRoot(mainMenu());
+			});
+		
+
+			
+		userHBox.getChildren().add(userSelect);
+		userHBox.getChildren().add(users);
+
+		battleHBox.getChildren().add(battleSelect);
+		battleHBox.getChildren().add(battleLogs);
+
+		
+		statistics.getChildren().add(header);
+		statistics.getChildren().add(username);
+		statistics.getChildren().add(playedGames);
+		statistics.getChildren().add(wonGames);
+		statistics.getChildren().add(wlRatio);
+		
+		
+		information.getChildren().add(battleLogText);
+		information.getChildren().add(statistics);
+		
+		content.getChildren().add(userHBox);
+		content.getChildren().add(battleHBox);
+		content.getChildren().add(information);
+		content.getChildren().add(backToMenu);
+		
+		frame.setCenter(content);
+		
+		return frame;
+	}
+	
 	
 	
 	// Battle setup menu interface
@@ -475,16 +637,17 @@ public class GameDisplay extends Application {
 		
 		
 		Button startGame = new Button("START GAME");
-		lowerButtons.getChildren().add(startGame);
+		soundPlayer.playOnHover(startGame);
 		startGame.setDisable(true);
 		startGame.setMinWidth(300);
 		
-		Button returnToMenu = new Button("Back to Menu");
-		returnToMenu.setMinWidth(300);
+		Button backToMenu = new Button("Back to Menu");
+		soundPlayer.playOnHover(backToMenu);
 
-		lowerButtons.getChildren().add(returnToMenu);
+		backToMenu.setMinWidth(300);
+
 		
-		returnToMenu.setOnMouseClicked(e -> {
+		backToMenu.setOnMouseClicked(e -> {
 			scene.setRoot(mainMenu());
 		});	
 		
@@ -492,6 +655,10 @@ public class GameDisplay extends Application {
 		// and clear all necessary match conditions
 		startGame.setOnMouseClicked(e -> {
 			
+			// Resetting player currentBattles
+			p1.setCurrentBattle(new BattleLog());
+			p2.setCurrentBattle(new BattleLog());
+
 			// Resetting battle boolean
 			battleFinished = false;
 			
@@ -554,6 +721,9 @@ public class GameDisplay extends Application {
 		centerDisplay.getChildren().add(hboxFighter);
 		centerDisplay.getChildren().add(lowerButtons);
 		
+		lowerButtons.getChildren().add(startGame);
+		lowerButtons.getChildren().add(backToMenu);
+
 		root.getChildren().add(p1VBox);
 		root.getChildren().add(centerDisplay);
 		root.getChildren().add(p2VBox);
@@ -619,13 +789,10 @@ public class GameDisplay extends Application {
 			fighterName.setText(selected.getName()); // Changes text of FighterHeader to reflect character choice
 			
 			// Setting sprite for display
-			try {
-				imageViewer = new FileInputStream(new File(selected.getSpriteIdle()));
-				Image image = new Image(imageViewer);
+
+				File sprite = new File(selected.getSpriteIdle());
+				Image image = new Image(sprite.toURI().toString());
 				fighterSprite.setImage(image);
-			} catch (Exception e1) {
-				// Do nothing
-			}
 			
 			
 			// Assigning fighter to player
@@ -688,6 +855,8 @@ public class GameDisplay extends Application {
 	public HBox matchInterface() {
 		
 		Button advance = new Button("[C] Continue");
+		soundPlayer.playOnHover(advance);
+
 		advance.setMinWidth(250);
 		
 		if(battleFinished)
@@ -731,6 +900,7 @@ public class GameDisplay extends Application {
 		// Event listener for round advancing and key presses
 		root.addEventHandler(KeyEvent.KEY_PRESSED, (key) -> {
 			if(key.getCode()==KeyCode.C && !advance.isDisable()) {
+				soundPlayer.playNextRound();
 				advanceRound(turnDisplay);
 			}
 			
@@ -763,6 +933,7 @@ public class GameDisplay extends Application {
 			}			
 		});
 		advance.setOnMouseClicked(e -> {
+			soundPlayer.playNextRound();
 			advanceRound(turnDisplay);	
 		});
 		
@@ -842,24 +1013,23 @@ public class GameDisplay extends Application {
 		@Override
 		public void run() {
 			if(p1.getFighter().tookDamage()) {
-				try {
-					imageViewer = new FileInputStream(new File(p1.getFighter().getSpriteHurt()));
-					Image image = new Image(imageViewer);
-					sprite1.setImage(image);
-				} catch (Exception e1) {
-					e1.printStackTrace();
-				}
-			} 
+				soundPlayer.playDamageLeft();
+				File spriteHurt = new File(p1.getFighter().getSpriteHurt());
+				Image image = new Image(spriteHurt.toURI().toString());
+				sprite1.setImage(image);
+				
+			} else {
+				soundPlayer.playUndamagedLeft();
+			}
 			
 			if(p2.getFighter().tookDamage()) {
-				try {
-					imageViewer = new FileInputStream(new File(p2.getFighter().getSpriteHurt()));
-					Image image = new Image(imageViewer);
-					sprite2.setImage(image);
-				} catch (Exception e1) {
-					e1.printStackTrace();
-				}
-			} 
+				soundPlayer.playDamageRight();
+				File spriteHurt = new File(p2.getFighter().getSpriteHurt());
+				Image image = new Image(spriteHurt.toURI().toString());
+				sprite2.setImage(image);
+			} else {
+				soundPlayer.playUndamagedRight();
+			}
 		}
 	}
 		
@@ -903,6 +1073,8 @@ public class GameDisplay extends Application {
 	
 	// Helper method for reading key inputs of players during match
 	private void readKeys(Player p, VBox pVBox, int action, Button advance) {
+		soundPlayer.playSuccess();
+
 		p.getFighter().setChosenAction(action);
 		p.setHasActed(true);
 		checkActions(advance);
@@ -1018,6 +1190,11 @@ public class GameDisplay extends Application {
 		Button counter = new Button(keys[2] + ":Counter[" + p.getFighter().getCounter() + "]");
 		Button deflect = new Button();
 		
+		soundPlayer.playOnHover(attack);
+		soundPlayer.playOnHover(grab);
+		soundPlayer.playOnHover(counter);
+		soundPlayer.playOnHover(deflect);
+
 		// Changing the deflect stat to a number based on the calculation
 		if(isLeft) {
 			int damage = (int)(0.01* p1.getFighter().getDeflect() * p2.getFighter().getGrab());
@@ -1034,13 +1211,11 @@ public class GameDisplay extends Application {
 		deflect.setMaxWidth(buttonWidth);
 
 		ImageView fighterSprite = new ImageView();
-		try {
-			imageViewer = new FileInputStream(new File(p.getFighter().getSpriteIdle()));
-			Image image = new Image(imageViewer);
-			fighterSprite.setImage(image);
-		} catch (Exception e1) {
-			e1.printStackTrace();
-		}
+
+		File sprite = new File(p.getFighter().getSpriteIdle());
+		Image image = new Image(sprite.toURI().toString());
+		fighterSprite.setImage(image);
+
 		
 		
 		// Assembly order
@@ -1062,24 +1237,28 @@ public class GameDisplay extends Application {
 		}
 		
 		attack.setOnMouseClicked(e -> {	
+			soundPlayer.playSuccess();
 			p.getFighter().setChosenAction(0);
 			p.setHasActed(true);
 			setButtons(attack, grab, counter, deflect, true);
 			checkActions(advance);	
 		});
 		grab.setOnMouseClicked(e -> {
+			soundPlayer.playSuccess();
 			p.getFighter().setChosenAction(1);
 			p.setHasActed(true);
 			setButtons(attack, grab, counter, deflect, true);
 			checkActions(advance);
 		});
 		counter.setOnMouseClicked(e -> {
+			soundPlayer.playSuccess();
 			p.getFighter().setChosenAction(2);
 			p.setHasActed(true);
 			setButtons(attack, grab, counter, deflect, true);
 			checkActions(advance);
 		});
 		deflect.setOnMouseClicked(e -> {
+			soundPlayer.playSuccess();
 			p.getFighter().setChosenAction(3);
 			p.setHasActed(true);
 			setButtons(attack, grab, counter, deflect, true);

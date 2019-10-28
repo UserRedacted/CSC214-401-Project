@@ -164,6 +164,8 @@ public class Fighter {
 				first.hp -= damage;
 				output.append(printDamage(first, damage));
 			} else {
+				first.tookDamage = false;
+				second.tookDamage = false;
 				output.append("\tThe attacks cancel out!\n");
 			}
 
@@ -189,6 +191,8 @@ public class Fighter {
 				first.hp -= damage;
 				output.append(printDamage(first, damage));
 			} else {
+				first.tookDamage = false;
+				second.tookDamage = false;
 				output.append("\tThe grabs cancel out!\n");
 			}
 		}
