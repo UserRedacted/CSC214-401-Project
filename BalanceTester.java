@@ -46,13 +46,13 @@ public class BalanceTester {
 		for(int i = 0; i < numBattles; i ++) {
 			setFighters(fighter1_name, fighter2_name);
 			
-			while(p1.fighter.getHp() > 0 && p2.fighter.getHp() > 0) {
+			while(p1.getFighter().getHp() > 0 && p2.getFighter().getHp() > 0) {
 				takeTurn();
 			}
 			
-			if(p1.fighter.getHp() > 0) {
+			if(p1.getFighter().getHp() > 0) {
 				p1_won ++;
-			} else if(p2.fighter.getHp() > 0) {
+			} else if(p2.getFighter().getHp() > 0) {
 				p2_won ++;
 			}
 		}	
@@ -68,16 +68,16 @@ public class BalanceTester {
 	private static void printResults(int numBattles) {
 		double percentWon;
 		percentWon = 100.0*p1_won/(p1_won+p2_won);
-		System.out.println("\t" + p1.fighter.getName() + " wins " + p1_won + " / " +p2_won + " (" + percentWon + "%) of matches");
+		System.out.println("\t" + p1.getFighter().getName() + " wins " + p1_won + " / " +p2_won + " (" + percentWon + "%) of matches");
 	}
 
 	// One turn of combat, shortened and refined
 	private static void takeTurn() {
 		
-		p1.fighter.setChosenAction(p1.makeDecision(p1.getDifficulty()));
-		p2.fighter.setChosenAction(p2.makeDecision(p2.getDifficulty()));
+		p1.getFighter().setChosenAction(p1.makeDecision(p1.getDifficulty()));
+		p2.getFighter().setChosenAction(p2.makeDecision(p2.getDifficulty()));
 
-		Fighter.compareAction(p1.fighter, p2.fighter);
+		Fighter.compareAction(p1.getFighter(), p2.getFighter());
 	}
 
 	// Looks for fighters with a name the same as the strings sent as parameters

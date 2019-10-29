@@ -1,5 +1,6 @@
-import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
 public class BattleLog {
@@ -21,9 +22,11 @@ public class BattleLog {
 	}
 	
 	public void sendToFile(Player p) {
-		File battle = new File(p.getName() + "_battle_" + p.getNumBattles() + ".txt");
+		String filename = p.getName() + "_battle_" + p.getNumBattles() + ".txt";
+		String directory = "resources/players/" + p.getName() + "/";	
 			try {
-				writer = new PrintWriter(battle.getName(), "UTF-8");
+
+				writer = new PrintWriter(directory + filename, "UTF-8");
 				
 				for(int i = 0; i < p.getCurrentBattle().getBattleTurns().size()-1; i++) {
 					writer.println("TURN " + (i+1));
@@ -32,8 +35,9 @@ public class BattleLog {
 				writer.println(p.getCurrentBattle().getBattleTurns().get(p.getCurrentBattle().getBattleTurns().size()-1));
 				writer.close();
 				
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
+			} catch (FileNotFoundException e) {
+				// File does not need to be written in this case
+			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
 			}	
 

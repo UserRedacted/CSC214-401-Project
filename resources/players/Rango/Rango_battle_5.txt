@@ -1,0 +1,37 @@
+TURN 1
+Walbow grabs [90] and Sir Fuzzy counters [110]
+	Sir Fuzzy takes 90dmg!
+
+TURN 2
+Walbow counters [90] and Sir Fuzzy deflects [80%]
+	Walbow and Sir Fuzzy stand around awkwardly...
+
+TURN 3
+Walbow grabs [81] and Sir Fuzzy grabs [60]
+	Sir Fuzzy takes 21dmg!
+
+TURN 4
+Sir Fuzzy counters [99] and Walbow deflects [100%]
+	"Oh, you're approaching me?"
+
+TURN 5
+Walbow attacks [90] and Sir Fuzzy counters [89]
+	Walbow takes 89dmg!
+
+TURN 6
+Walbow grabs [72] and Sir Fuzzy grabs [54]
+	Sir Fuzzy takes 18dmg!
+
+TURN 7
+Walbow grabs [64] and Sir Fuzzy counters [80]
+	Sir Fuzzy takes 64dmg!
+
+TURN 8
+Sir Fuzzy attacks [70] and Walbow counters [81]
+	Sir Fuzzy takes 81dmg!
+
+TURN 9
+Walbow attacks [81] and Sir Fuzzy deflects [72%]
+	Sir Fuzzy takes 81dmg!
+
+Rango WINS THE BATTLE!!

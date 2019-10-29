@@ -1,3 +1,4 @@
+import java.io.File;
 
 public class User extends Player {
 
@@ -8,14 +9,25 @@ public class User extends Player {
 	public User(String name) {
 		super(name);
 		loggedIn = "true";
+		createFolder();
 	}
-
 	public User(String name, String password) {
 		super(name);
 		this.password = password;
 		loggedIn = "true";
+		createFolder();
+	}
+	public User(String name, String password, String numBattles) {
+		super(name);
+		this.password = password;
+		this.setNumBattles(Integer.parseInt(numBattles));
+		loggedIn = "true";
+		createFolder();
 	}
 
+	
+	
+	
 	public String getPassword() {
 		return password;
 	}
@@ -33,4 +45,12 @@ public class User extends Player {
 	}
 
 
+	
+	
+	public void createFolder() {
+			File dir = new File("resources/players/" + this.getName());
+			dir.mkdir();
+	}
+	
+	
 }

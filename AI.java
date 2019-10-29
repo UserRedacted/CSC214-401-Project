@@ -14,7 +14,7 @@ public class AI extends Player {
 	
 	public AI(String name, int difficulty) {
 		super(name);
-		super.isHuman = false;
+		super.setHuman(false);
 		this.difficulty = difficulty;
 	}
 
@@ -126,7 +126,7 @@ public class AI extends Player {
 	
 	// Returns the option that deals the most damage if landed successfully
 	private int strongestMove() {
-		Fighter f = new Fighter(this.fighter);
+		Fighter f = new Fighter(this.getFighter());
 		// List of numerical moves 
 		int[] actions = {f.getAttack(), f.getGrab(), f.getCounter(), (int)(0.01*f.getDeflect()*opponent.getFighter().getGrab())};
 		int strongestAction = 0;

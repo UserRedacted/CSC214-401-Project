@@ -31,7 +31,7 @@ public class FighterList {
 		blobert.setSpriteHurt("resources\\sprites\\BlobertHurt.gif");
 		fighters.add(blobert);
 		
-		Fighter zen = new Fighter("Zen", 285, 60, 65, 75, 200);
+		Fighter zen = new Fighter("Zen", 285, 60, 70, 75, 190);
 		zen.setSpriteIdle("resources\\sprites\\Zen.gif");
 		zen.setSpriteHurt("resources\\sprites\\ZenHurt.gif");
 		fighters.add(zen);

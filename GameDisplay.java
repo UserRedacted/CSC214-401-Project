@@ -151,6 +151,7 @@ public class GameDisplay extends Application {
 				soundPlayer.playOnHover(beginMatch);
 				
 				beginMatch.setOnMouseClicked(e -> {
+					soundPlayer.playClick();
 					scene.setRoot(matchSetupMenu());
 				});
 						
@@ -159,6 +160,7 @@ public class GameDisplay extends Application {
 				soundPlayer.playOnHover(loadUser);
 
 				loadUser.setOnMouseClicked(e -> {
+					soundPlayer.playClick();
 					scene.setRoot(loginMenu());
 				});
 					
@@ -168,8 +170,21 @@ public class GameDisplay extends Application {
 				soundPlayer.playOnHover(playerInfo);
 
 				playerInfo.setOnMouseClicked(e -> {
+					soundPlayer.playClick();
 					scene.setRoot(informationMenu());
 				});
+				
+				
+				
+				Button tutorial = new Button("Tutorial");
+				tutorial.setMaxWidth(buttonWidth);
+				soundPlayer.playOnHover(tutorial);
+
+				tutorial.setOnMouseClicked(e -> {
+					soundPlayer.playClick();
+					scene.setRoot(tutorialMenu());
+				});
+				
 				
 				
 				Button quit = new Button("Quit");
@@ -180,10 +195,10 @@ public class GameDisplay extends Application {
 				
 		
 		
-		
 		menu.getChildren().add(beginMatch);
 		menu.getChildren().add(loadUser);
 		menu.getChildren().add(playerInfo);	
+		menu.getChildren().add(tutorial);	
 		menu.getChildren().add(quit);	
 
 		
@@ -416,6 +431,7 @@ public class GameDisplay extends Application {
 		soundPlayer.playOnHover(backToMenu);
 
 		backToMenu.setOnMouseClicked(e -> {
+			soundPlayer.playClick2();
 			scene.setRoot(mainMenu());
 		});
 		
@@ -539,6 +555,7 @@ public class GameDisplay extends Application {
 			backToMenu.setMinWidth(300);
 			soundPlayer.playOnHover(backToMenu);
 			backToMenu.setOnMouseClicked(e -> {
+				soundPlayer.playClick2();
 				scene.setRoot(mainMenu());
 			});
 		
@@ -572,6 +589,64 @@ public class GameDisplay extends Application {
 	}
 	
 	
+	public BorderPane tutorialMenu() {
+		BorderPane frame = new BorderPane();
+		frame.setPadding(new Insets(25, 25, 25, 25));
+		
+		
+		VBox content = new VBox();
+		content.setId("panel");
+		content.setAlignment(Pos.CENTER);
+		content.setMaxWidth(800);
+		
+		
+		Text header = new Text("Welcome to Project50!\n");
+		header.setFont(Font.loadFont(fixedsys, 48));
+		
+		String generalInfo = "";
+		generalInfo += "Project50 is a turn based combat game like Rock, Paper, Scissors.\n";
+		generalInfo += "The key is understanding what the moves are, and what each move does.\n\n";
+		generalInfo += "Some important information:\n";
+		generalInfo += "1.\tYou can take 4 actions: Attack, Grab, Counter, and Deflect.\n";
+		generalInfo += "2.\tEach action does a base amount of damage.\n";
+		generalInfo += "3.\tEvery time you use an action, its base damage decreases.\n";
+		generalInfo += "4.\tThe goal is to get your opponent to 0 HP (Health Points)\n";
+		
+		
+		String moves = "";
+		moves += "THE MATCH-UPS:\n";
+		moves += "1.\tAttack > Attack :: The stronger attack lands, but does less damage\n";
+		moves += "2.\tGrab > Grab :: The stronger grab lands, but does less damage\n";
+		moves += "3.\tAttack == Grab :: Both actions deal their full damage\n";
+		moves += "4.\tCounter > Attack :: Counter only lands when your opponent attacks.\n"; 
+		moves += "5.\tDeflect > Grab :: Deflect only lands when your opponent grabs.\n"; 
+		moves += "6.\tCounter-Counter, Counter-Deflect, and Deflect-Counter do nothing...\n";
+		
+		Text info = new Text(generalInfo);
+		info.setFont(Font.loadFont(fixedsys, 24));
+		
+		Text movePairs = new Text(moves);
+		movePairs.setFont(Font.loadFont(fixedsys, 24));
+		
+		Button backToMenu = new Button("Back to Menu");
+		backToMenu.setMinWidth(300);
+		soundPlayer.playOnHover(backToMenu);
+		backToMenu.setOnMouseClicked(e -> {
+			soundPlayer.playClick2();
+			scene.setRoot(mainMenu());
+		});
+		
+
+		content.getChildren().add(header);
+		content.getChildren().add(info);
+		content.getChildren().add(movePairs);
+		content.getChildren().add(backToMenu);
+		frame.setCenter(content);
+
+		return frame;
+	}
+	
+	
 	
 	// Battle setup menu interface
 	public HBox matchSetupMenu() {
@@ -585,8 +660,8 @@ public class GameDisplay extends Application {
 		VBox centerDisplay = new VBox();
 		centerDisplay.setId("panel"); // fetching CSS data
 		centerDisplay.setAlignment(Pos.CENTER);
-		centerDisplay.setMinWidth(700);
-		centerDisplay.setMaxWidth(900);
+		centerDisplay.setMinWidth(500);
+		centerDisplay.setMaxWidth(700);
 		
 		Text choose = new Text("CHOOSE YOUR FIGHTER");
 		
@@ -609,8 +684,8 @@ public class GameDisplay extends Application {
 		
 		
 		ListView<Fighter> p1Fighter = new ListView<>();
-		p1Fighter.setMinWidth(300);
-
+		p1Fighter.setMaxWidth(200);
+		
 		for(int i = 0; i < fighterList.getFighters().size(); i++) {
 			p1Fighter.getItems().add(fighterList.getFighters().get(i));
 		}	
@@ -619,7 +694,7 @@ public class GameDisplay extends Application {
 		
 		
 		ListView<Fighter> p2Fighter = new ListView<>();
-		p2Fighter.setMinWidth(300);
+		p2Fighter.setMaxWidth(200);
 
 		for(int i = 0; i < fighterList.getFighters().size(); i++) {
 			p2Fighter.getItems().add(fighterList.getFighters().get(i));
@@ -639,15 +714,16 @@ public class GameDisplay extends Application {
 		Button startGame = new Button("START GAME");
 		soundPlayer.playOnHover(startGame);
 		startGame.setDisable(true);
-		startGame.setMinWidth(300);
+		startGame.setMinWidth(250);
 		
+		
+		// Back to menu button
 		Button backToMenu = new Button("Back to Menu");
 		soundPlayer.playOnHover(backToMenu);
-
-		backToMenu.setMinWidth(300);
-
-		
+		backToMenu.setMinWidth(250);
+	
 		backToMenu.setOnMouseClicked(e -> {
+			soundPlayer.playClick2();
 			scene.setRoot(mainMenu());
 		});	
 		
@@ -1000,7 +1076,7 @@ public class GameDisplay extends Application {
 		}
 	}
 	
-	// Used to update sprites for damage taken
+	// Used to update sprites for damage taken - also plays sound accordingly
 	class UpdateSprites extends TimerTask {
 		ImageView sprite1;
 		ImageView sprite2;
@@ -1124,6 +1200,11 @@ public class GameDisplay extends Application {
 			p2.setCurrentBattle(p1.getCurrentBattle());
 			p1.getCurrentBattle().sendToFile(p1);
 			p2.getCurrentBattle().sendToFile(p2);
+			
+			// Updating the number of battles users have played
+			playerList.updateUsers(p1);
+			playerList.updateUsers(p2);
+			playerList.updateCSV();
 		} 
 	}
 	
@@ -1177,7 +1258,7 @@ public class GameDisplay extends Application {
 		Text name = new Text();
 		name.setFont(Font.loadFont(fixedsys, 48));
 		name.setTextAlignment(TextAlignment.CENTER);
-		name.setText(p.name + "\n" + p.getFighter().getName());
+		name.setText(p.getName() + "\n" + p.getFighter().getName());
 
 
 		String health = "HP: " + p.getFighter().getPrevHp();

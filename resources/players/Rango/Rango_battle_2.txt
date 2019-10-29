@@ -1,0 +1,9 @@
+TURN 1
+Walbow grabs [90] and Boomer deflects [150%]
+	Walbow takes 135dmg!
+
+TURN 2
+Walbow grabs [81] and Boomer deflects [135%]
+	Walbow takes 109dmg!
+
+Player 1 WINS THE BATTLE!!

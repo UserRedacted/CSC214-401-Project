@@ -64,13 +64,11 @@ public class PlayerList {
       
              */
             while ((line = br.readLine()) != null) {
-                // use comma as separator
+            	// use comma as separator
                 String[] playerDetails = line.split(",");
 
-                User temp = new User("Default", "password");
-                temp.name = decrypt(playerDetails[0]);
-                temp.password = decrypt(playerDetails[1]);
-                temp.loggedIn = decrypt(playerDetails[2]);
+                User temp = new User(decrypt(playerDetails[0]), decrypt(playerDetails[1]), decrypt(playerDetails[2]));
+                temp.loggedIn = decrypt(playerDetails[3]);
                 
                
                 
@@ -84,12 +82,12 @@ public class PlayerList {
                 	addToPlayers = false;
                 }
                 for(int i = 0; i < players.size(); i++) {
-                	if(players.get(i).getName().equals(temp.name)) {
+                	if(players.get(i).getName().equals(temp.getName())) {
                 		addToPlayers = false;
                 	}
                 }
                 for(int i = 0; i < users.size(); i++) {
-                	if(users.get(i).getName().equals(temp.name)) {
+                	if(users.get(i).getName().equals(temp.getName())) {
                 		addToUsers = false;
                 	}
                 }
@@ -98,7 +96,7 @@ public class PlayerList {
                 	players.add(temp);
                 } else {
                 	for(int i = 0; i < players.size(); i++) {
-                		if(players.get(i).name.equals(temp.name)) {
+                		if(players.get(i).getName().equals(temp.getName())) {
                 			players.remove(i);
                 		}
                 	}
@@ -165,18 +163,31 @@ public class PlayerList {
 	
 	
 	// Used to make sure that the CSV containing user profiles is current and accurate
-	private void updateCSV() {
+	public void updateCSV() {
 		try {
 			PrintWriter writer = new PrintWriter(profiles, "UTF-8");
 
 			for(int i = 0; i < users.size(); i++) {
-				writer.println(encrypt(users.get(i).getName()) + "," + encrypt(users.get(i).getPassword()) + "," + encrypt(users.get(i).getLoggedIn()));
+				writer.println(encrypt(users.get(i).getName()) 
+				+ "," + encrypt(users.get(i).getPassword()) 
+				+ "," + encrypt(Integer.toString(users.get(i).getNumBattles()))
+				+ "," + encrypt(users.get(i).getLoggedIn()));
 			}
 			writer.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}	
 	}
+	
+	// Updates the number of battles a users has fought if needed
+	public void updateUsers(Player p) {
+		for(int i = 0; i < users.size(); i++) {
+			if(p.getName().equals(users.get(i).getName())) {
+				users.get(i).setNumBattles(p.getNumBattles());
+			}
+		}
+	}
+	
 	
 	
 	// Algorithms for encrypting/decrypting user data for security. A simple Caesar Cipher shift based on the encryption key.
@@ -226,6 +237,8 @@ public class PlayerList {
 	public void setUsers(ArrayList<User> users) {
 		this.users = users;
 	}
+
+
 
 	
 	

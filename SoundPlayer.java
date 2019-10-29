@@ -22,9 +22,6 @@ public class SoundPlayer {
 	
 	
 	
-	
-	
-	
 	// General use sound playing
 	
 	public void playDamageLeft() {
@@ -35,7 +32,6 @@ public class SoundPlayer {
 		File sound = new File("resources\\sound\\damageRight.wav");
 		play(sound);
 	}
-	
 	public void playUndamagedLeft() {
 		File sound = new File("resources\\sound\\undamagedLeft.wav");
 		play(sound);
@@ -48,30 +44,28 @@ public class SoundPlayer {
 		File sound = new File("resources\\sound\\nextRound.wav");
 		play(sound);
 	}
-	
-	
 	public void playFailure() {
 		File sound = new File("resources\\sound\\failure.wav");
 		play(sound);
-	}
-	
+	}	
 	public void playHover() {
 		File sound = new File("resources\\sound\\hover.wav");
 		play(sound);
-
-	}	
-	
+	}		
 	public void playClick() {
 		File sound = new File("resources\\sound\\click.wav");
 		play(sound);
 	}	
-	
+	public void playClick2() {
+		File sound = new File("resources\\sound\\click2.wav");
+		play(sound);
+	}	
 	public void playSuccess() {
 		File sound = new File("resources\\sound\\success.wav");
 		play(sound);
 	}	
 	
-	
+	// Function that takes in any sound file and simply plays it at default settings
 	private void play(File sound) {
 		Media media = new Media(sound.toURI().toString());
 		soundPlayer = new MediaPlayer(media);

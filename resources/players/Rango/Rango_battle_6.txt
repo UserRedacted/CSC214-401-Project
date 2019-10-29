@@ -1,0 +1,24 @@
+TURN 1
+Zen attacks [60] and Zen grabs [70]
+	Zen takes 60dmg!
+	Zen takes 70dmg!
+
+TURN 2
+Zen attacks [54] and Zen grabs [63]
+	Zen takes 54dmg!
+	Zen takes 63dmg!
+
+TURN 3
+Zen attacks [48] and Zen grabs [56]
+	Zen takes 48dmg!
+	Zen takes 56dmg!
+
+TURN 4
+Zen grabs [50] and Zen deflects [190%]
+	Zen takes 95dmg!
+
+TURN 5
+Zen grabs [70] and Zen deflects [190%]
+	Zen takes 133dmg!
+
+AI Garry WINS THE BATTLE!!

@@ -1,13 +1,13 @@
 
 public class Player {
 	
-	protected boolean isHuman;
-	protected String name;
-	protected Fighter fighter;
-	protected boolean hasActed = false;
+	private boolean isHuman;
+	private String name;
+	private Fighter fighter;
+	private boolean hasActed = false;
 	
-	protected int numBattles;
-	protected BattleLog currentBattle = new BattleLog();
+	private int numBattles;
+	private BattleLog currentBattle = new BattleLog();
 	
 	
 	public Player(String name) {
