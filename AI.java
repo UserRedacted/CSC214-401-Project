@@ -52,15 +52,10 @@ public class AI extends Player {
 	}
 
 	
-	
-	//Needed for very specific context
-	public static int checkDifficulty(AI a) {
-		return a.getDifficulty();
-	}
 
 	// Makes a decision based on AI difficulty
 	// Each difficulty has a unique thought process
-	public int makeDecision(int difficulty) {
+	public int makeDecision() {
 		opponentActions[front%5] = new Integer(opponent.getFighter().getChosenAction());
 		front++;
 		if(difficulty == 1) {

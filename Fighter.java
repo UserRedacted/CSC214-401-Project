@@ -94,15 +94,20 @@ public class Fighter {
 		
 		if(this.chosenAction == 0) {
 			this.attack *= percentDebuff;
+			this.attack += 1;
 		}
 		if(this.chosenAction == 1) {
 			this.grab *= percentDebuff;
+			this.grab += 1;
 		}
 		if(this.chosenAction == 2) {
 			this.counter *= percentDebuff;
+			this.counter += 1;
 		}
 		if(this.chosenAction == 3) {
 			this.deflect *= percentDebuff;
+			this.deflect += 1;
+
 		}
 	}
 	

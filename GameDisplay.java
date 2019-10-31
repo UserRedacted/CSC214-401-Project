@@ -65,7 +65,7 @@ public class GameDisplay extends Application {
 	public void start(Stage stage)  {
 
 		stage.setMaximized(true);
-		stage.setFullScreen(true);
+		stage.setFullScreen(false);
 		
 		// NOTE: This can be used as a template for playing music and sound effects
 		File song = new File("resources\\music\\Theme.wav");
@@ -155,7 +155,7 @@ public class GameDisplay extends Application {
 					scene.setRoot(matchSetupMenu());
 				});
 						
-				Button loadUser = new Button("Load/Create UserName");
+				Button loadUser = new Button("Load/Create User Profile");
 				loadUser.setMaxWidth(buttonWidth);
 				soundPlayer.playOnHover(loadUser);
 
@@ -332,6 +332,7 @@ public class GameDisplay extends Application {
 						playerList.getUsers().get(i).setLoggedIn("true");
 						playerList.loadPrivatePlayers();
 						messageIndicator.setText("User \"" + username + "\" successfully logged in!");
+						playerList.updateCSV();
 						soundPlayer.playSuccess();
 
 					} else {
@@ -366,6 +367,7 @@ public class GameDisplay extends Application {
 				if(playerList.getUsers().get(i).getName().equals(username)) {
 					playerList.getUsers().get(i).setLoggedIn("false");
 					messageIndicator.setText("Successfully logged out user " + username + "!");
+					playerList.updateCSV();
 					soundPlayer.playSuccess();
 
 					playerList.loadPrivatePlayers();
@@ -606,22 +608,25 @@ public class GameDisplay extends Application {
 		String generalInfo = "";
 		generalInfo += "Project50 is a turn based combat game like Rock, Paper, Scissors.\n";
 		generalInfo += "The key is understanding what the moves are, and what each move does.\n\n";
-		generalInfo += "Some important information:\n";
+		generalInfo += "GENERAL INFO:\n";
 		generalInfo += "1.\tYou can take 4 actions: Attack, Grab, Counter, and Deflect.\n";
-		generalInfo += "2.\tEach action does a base amount of damage.\n";
-		generalInfo += "3.\tEvery time you use an action, its base damage decreases.\n";
-		generalInfo += "4.\tThe goal is to get your opponent to 0 HP (Health Points)\n";
+		generalInfo += "2.\tAttack & Grab are offensive. Counter & Deflect are defensive.\n";
+		generalInfo += "3.\tEach action does a base amount of damage when it lands.\n";
+		generalInfo += "4.\tEvery time you use an action, its base damage decreases.\n";
+		generalInfo += "5.\tThe goal is to get your opponent to 0 HP (Health Points)\n";
 		
 		
 		String moves = "";
-		moves += "THE MATCH-UPS:\n";
-		moves += "1.\tAttack > Attack :: The stronger attack lands, but does less damage\n";
-		moves += "2.\tGrab > Grab :: The stronger grab lands, but does less damage\n";
-		moves += "3.\tAttack == Grab :: Both actions deal their full damage\n";
-		moves += "4.\tCounter > Attack :: Counter only lands when your opponent attacks.\n"; 
-		moves += "5.\tDeflect > Grab :: Deflect only lands when your opponent grabs.\n"; 
-		moves += "6.\tCounter-Counter, Counter-Deflect, and Deflect-Counter do nothing...\n";
+		moves += "THE CRITICAL MATCH-UPS:\n";
+		moves += "1.\tAttack > Attack : Stronger attack lands, does less damage\n";
+		moves += "2.\tGrab > Grab : Stronger grab lands, does less damage\n";
+		moves += "3.\tAttack == Grab : Both actions deal full damage\n";
+		moves += "4.\tCounter > Attack : Counter lands against an attack.\n"; 
+		moves += "5.\tDeflect > Grab : Deflect lands against a grab.\n"; 
+		moves += "6.\tTwo defensive moves : No result...\n";
 		
+		moves += "\n\nIf you don't quite understand yet, just get out there and fight!";
+		moves += "\nExperience is the best teacher.";
 		Text info = new Text(generalInfo);
 		info.setFont(Font.loadFont(fixedsys, 24));
 		
@@ -981,32 +986,36 @@ public class GameDisplay extends Application {
 			}
 			
 			//Player 1 Controls
-			if(key.getCode() == KeyCode.A) {
-				readKeys(p1, p1c, 0, advance);
+			if(!p1.hasActed()) {
+				if(key.getCode() == KeyCode.A) {
+					readKeys(p1, p1c, 0, advance);
+				}
+				if(key.getCode() == KeyCode.S) {
+					readKeys(p1, p1c, 1, advance);
+				}
+				if(key.getCode() == KeyCode.D) {
+					readKeys(p1, p1c, 2, advance);
+				}		
+				if(key.getCode() == KeyCode.F) {
+					readKeys(p1, p1c, 3, advance);
+				}		
 			}
-			if(key.getCode() == KeyCode.S) {
-				readKeys(p1, p1c, 1, advance);
-			}
-			if(key.getCode() == KeyCode.D) {
-				readKeys(p1, p1c, 2, advance);
-			}		
-			if(key.getCode() == KeyCode.F) {
-				readKeys(p1, p1c, 3, advance);
-			}		
 			
 			//Player 2 Controls
-			if(key.getCode() == KeyCode.U) {
-				readKeys(p2, p2c, 0, advance);
+			if(!p2.hasActed()) {
+				if(key.getCode() == KeyCode.U) {
+					readKeys(p2, p2c, 0, advance);
+				}
+				if(key.getCode() == KeyCode.I) {
+					readKeys(p2, p2c, 1, advance);
+				}
+				if(key.getCode() == KeyCode.O) {
+					readKeys(p2, p2c, 2, advance);
+				}	
+				if(key.getCode() == KeyCode.P) {
+					readKeys(p2, p2c, 3, advance);
+				}
 			}
-			if(key.getCode() == KeyCode.I) {
-				readKeys(p2, p2c, 1, advance);
-			}
-			if(key.getCode() == KeyCode.O) {
-				readKeys(p2, p2c, 2, advance);
-			}	
-			if(key.getCode() == KeyCode.P) {
-				readKeys(p2, p2c, 3, advance);
-			}			
 		});
 		advance.setOnMouseClicked(e -> {
 			soundPlayer.playNextRound();
@@ -1202,8 +1211,8 @@ public class GameDisplay extends Application {
 			p2.getCurrentBattle().sendToFile(p2);
 			
 			// Updating the number of battles users have played
-			playerList.updateUsers(p1);
-			playerList.updateUsers(p2);
+			playerList.updateNumBattles(p1);
+			playerList.updateNumBattles(p2);
 			playerList.updateCSV();
 		} 
 	}
@@ -1271,11 +1280,6 @@ public class GameDisplay extends Application {
 		Button counter = new Button(keys[2] + ":Counter[" + p.getFighter().getCounter() + "]");
 		Button deflect = new Button();
 		
-		soundPlayer.playOnHover(attack);
-		soundPlayer.playOnHover(grab);
-		soundPlayer.playOnHover(counter);
-		soundPlayer.playOnHover(deflect);
-
 		// Changing the deflect stat to a number based on the calculation
 		if(isLeft) {
 			int damage = (int)(0.01* p1.getFighter().getDeflect() * p2.getFighter().getGrab());
@@ -1285,6 +1289,13 @@ public class GameDisplay extends Application {
 			int damage = (int)(0.01* p2.getFighter().getDeflect() * p1.getFighter().getGrab());
 			deflect.setText(keys[3] + ":Deflect[" + damage + "]");
 		}
+		
+		soundPlayer.playOnHover(attack);
+		soundPlayer.playOnHover(grab);
+		soundPlayer.playOnHover(counter);
+		soundPlayer.playOnHover(deflect);
+
+
 		
 		attack.setMaxWidth(buttonWidth);
 		grab.setMaxWidth(buttonWidth);
@@ -1351,8 +1362,7 @@ public class GameDisplay extends Application {
 		// AI Decision Making
 		if(!p.isHuman()) {
 			AI a = (AI)p;
-			int difficulty = AI.checkDifficulty((AI)p);
-			p.getFighter().setChosenAction(a.makeDecision(difficulty));
+			p.getFighter().setChosenAction(+a.makeDecision());
 			p.setHasActed(true);
 		}
 		

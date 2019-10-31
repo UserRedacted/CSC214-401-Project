@@ -60,7 +60,8 @@ public class PlayerList {
              	Format for each line:
              	1. Username
              	2. Password
-             	3. Boolean loggedIn (true/false)
+             	3. Number of battles fought
+             	4. Boolean loggedIn (true/false)
       
              */
             while ((line = br.readLine()) != null) {
@@ -80,15 +81,19 @@ public class PlayerList {
                 
                 if(temp.loggedIn.equals("false")) {
                 	addToPlayers = false;
+                } else {
+                    for(int i = 0; i < players.size(); i++) {
+                    	if(players.get(i).getName().equals(temp.getName())) {
+                    		addToPlayers = false;
+                    		players.set(i, temp);
+                    	}
+                    }
                 }
-                for(int i = 0; i < players.size(); i++) {
-                	if(players.get(i).getName().equals(temp.getName())) {
-                		addToPlayers = false;
-                	}
-                }
+
                 for(int i = 0; i < users.size(); i++) {
                 	if(users.get(i).getName().equals(temp.getName())) {
                 		addToUsers = false;
+                		users.set(i, temp);
                 	}
                 }
                 
@@ -180,7 +185,7 @@ public class PlayerList {
 	}
 	
 	// Updates the number of battles a users has fought if needed
-	public void updateUsers(Player p) {
+	public void updateNumBattles(Player p) {
 		for(int i = 0; i < users.size(); i++) {
 			if(p.getName().equals(users.get(i).getName())) {
 				users.get(i).setNumBattles(p.getNumBattles());

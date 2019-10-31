@@ -10,10 +10,8 @@
 
 #panel {
 	-fx-background-image: url("../resources/images/stone.png");
-	-fx-background-radius: 10;
 	-fx-border-color: black;
 	-fx-border-width: 5;
-	-fx-border-radius: 10;
     -fx-padding: 20, 20, 20, 20;
     -fx-spacing: 10;
 }

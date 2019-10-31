@@ -74,8 +74,8 @@ public class BalanceTester {
 	// One turn of combat, shortened and refined
 	private static void takeTurn() {
 		
-		p1.getFighter().setChosenAction(p1.makeDecision(p1.getDifficulty()));
-		p2.getFighter().setChosenAction(p2.makeDecision(p2.getDifficulty()));
+		p1.getFighter().setChosenAction(p1.makeDecision());
+		p2.getFighter().setChosenAction(p2.makeDecision());
 
 		Fighter.compareAction(p1.getFighter(), p2.getFighter());
 	}
