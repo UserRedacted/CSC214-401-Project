@@ -1,0 +1,51 @@
+TURN 1
+Walbow attacks [90] and Rocknald attacks [65]
+	Rocknald takes 25dmg!
+
+TURN 2
+Walbow grabs [90] and Rocknald grabs [65]
+	Rocknald takes 25dmg!
+
+TURN 3
+Walbow grabs [82] and Rocknald counters [60]
+	Rocknald takes 82dmg!
+
+TURN 4
+Walbow attacks [82] and Rocknald attacks [59]
+	Rocknald takes 23dmg!
+
+TURN 5
+Walbow attacks [74] and Rocknald attacks [54]
+	Rocknald takes 20dmg!
+
+TURN 6
+Walbow grabs [74] and Rocknald deflects [80%]
+	Walbow takes 59dmg!
+
+TURN 7
+Walbow attacks [67] and Rocknald counters [55]
+	Walbow takes 55dmg!
+
+TURN 8
+Rocknald attacks [49] and Walbow grabs [67]
+	Walbow takes 49dmg!
+	Rocknald takes 67dmg!
+
+TURN 9
+Rocknald grabs [59] and Walbow counters [90]
+	Walbow takes 59dmg!
+
+TURN 10
+Walbow attacks [61] and Rocknald attacks [45]
+	Rocknald takes 16dmg!
+
+TURN 11
+Walbow attacks [55] and Rocknald attacks [41]
+	Rocknald takes 14dmg!
+
+TURN 12
+Rocknald attacks [37] and Walbow grabs [61]
+	Walbow takes 37dmg!
+	Rocknald takes 61dmg!
+
+gamer2 WINS THE BATTLE!!

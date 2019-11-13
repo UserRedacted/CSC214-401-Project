@@ -56,6 +56,12 @@ public class FighterList {
 		shifty.setSpriteHurt("resources\\sprites\\ShiftyHurt.gif");
 		fighters.add(shifty);
 		
+		Fighter zoomer = new Fighter("Zoomer", 269, 77, 82, 86, 95);
+		zoomer.setSpriteIdle("resources\\sprites\\Zoomer.gif");
+		zoomer.setSpriteHurt("resources\\sprites\\ZoomerHurt.gif");
+		fighters.add(zoomer);
+		
+		
 	}
 	
 	public ArrayList<Fighter> getFighters() {

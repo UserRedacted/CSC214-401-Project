@@ -20,7 +20,7 @@ public class BalanceTester {
 		p1.setOpponent(p2);
 		p2.setOpponent(p1);
 		
-		testAll("Shifty", 100000);
+		testAll("Zoomer", 100000);
 
 
 

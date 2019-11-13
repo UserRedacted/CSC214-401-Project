@@ -1,0 +1,39 @@
+TURN 1
+Rocknald attacks [65] and Boomer attacks [70]
+	Rocknald takes 5dmg!
+
+TURN 2
+Boomer grabs [75] and Rocknald counters [60]
+	Rocknald takes 75dmg!
+
+TURN 3
+Rocknald attacks [59] and Boomer deflects [150%]
+	Boomer takes 59dmg!
+
+TURN 4
+Rocknald grabs [65] and Boomer counters [85]
+	Boomer takes 65dmg!
+
+TURN 5
+Rocknald attacks [54] and Boomer grabs [68]
+	Boomer takes 54dmg!
+	Rocknald takes 68dmg!
+
+TURN 6
+Rocknald attacks [49] and Boomer counters [77]
+	Rocknald takes 77dmg!
+
+TURN 7
+Rocknald grabs [59] and Boomer deflects [136%]
+	Rocknald takes 80dmg!
+
+TURN 8
+Rocknald counters [55] and Boomer deflects [123%]
+	"Oh, you're approaching me?"
+
+TURN 9
+Rocknald attacks [45] and Boomer grabs [62]
+	Boomer takes 45dmg!
+	Rocknald takes 62dmg!
+
+gamer2 WINS THE BATTLE!!

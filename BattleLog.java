@@ -1,4 +1,8 @@
+import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -8,9 +12,25 @@ public class BattleLog {
 	PrintWriter writer;
 	
 	private ArrayList<String> battleTurns;
+	private String name ="Default_BattleLog";
 	
 	public BattleLog() {
 		battleTurns = new ArrayList<String>();
+	}
+	
+	// Used for creating a BattleLog by reading from a file
+	public BattleLog(File battleLog) {
+		name = battleLog.getName();
+		readFromFile(battleLog);
+	}
+	
+	
+	
+
+
+	@Override
+	public String toString() {
+		return name;
 	}
 
 	public ArrayList<String> getBattleTurns() {
@@ -20,6 +40,10 @@ public class BattleLog {
 	public void setBattleTurns(ArrayList<String> battles) {
 		this.battleTurns = battles;
 	}
+	
+	
+	
+	
 	
 	public void sendToFile(Player p) {
 		String filename = p.getName() + "_battle_" + p.getNumBattles() + ".txt";
@@ -43,4 +67,29 @@ public class BattleLog {
 
 		
 	}
+
+
+	public void readFromFile(File battleLog) {
+		battleTurns = new ArrayList<String>();
+	    
+	    String line = "";
+	    
+		try (BufferedReader br = new BufferedReader(new FileReader(battleLog))) {
+
+            br.readLine();
+
+            while ((line = br.readLine()) != null) {
+
+            	battleTurns.add(line);
+            	
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } 
+		
+		
+	}
+
+
 }

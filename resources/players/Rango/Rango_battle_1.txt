@@ -1,9 +1,0 @@
-TURN 1
-Walbow grabs [90] and Zen deflects [190%]
-	Walbow takes 171dmg!
-
-TURN 2
-Walbow grabs [81] and Zen deflects [171%]
-	Walbow takes 138dmg!
-
-Rango WINS THE BATTLE!!

@@ -1,4 +1,4 @@
-
+// @Author Trevor Wilkins
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -530,7 +530,7 @@ public class GameDisplay extends Application {
 			// Children of HBox information
 		
 				ListView<String> battleLogText = new ListView<String>();
-				
+				battleLogText.setMinWidth(700);
 				
 				VBox statistics = new VBox();
 				statistics.setSpacing(5);
@@ -562,6 +562,38 @@ public class GameDisplay extends Application {
 			});
 		
 
+		//Event listener for profile choicebox
+			
+		users.getSelectionModel().selectedItemProperty().addListener(e -> {
+			p1 = users.getSelectionModel().getSelectedItem();
+			
+			username.setText("Username: " + p1.getName());
+			
+			// Setting up the battle log choicebox
+			battleLogs.getItems().clear();
+			
+			File dir = new File("resources/players/" + p1.getName());
+			  File[] directoryListing = dir.listFiles();
+			  if (directoryListing != null) {
+			    for (File child : directoryListing) {
+			    	battleLogs.getItems().add(new BattleLog(child));
+			    }
+			  }
+		});
+			
+		battleLogs.getSelectionModel().selectedItemProperty().addListener(e -> {
+			BattleLog battle = battleLogs.getSelectionModel().getSelectedItem();
+			
+			// Setting up ListView
+			battleLogText.getItems().clear();
+			for(String turn: battle.getBattleTurns()) {
+				battleLogText.getItems().add(turn);
+			}
+			
+		});
+		
+		
+			
 			
 		userHBox.getChildren().add(userSelect);
 		userHBox.getChildren().add(users);
@@ -859,7 +891,7 @@ public class GameDisplay extends Application {
 				giveFighter(p1, fighterChoice);
 			} else {
 				p2 = playerProfile.getSelectionModel().getSelectedItem();
-				giveFighter(p1, fighterChoice);
+				giveFighter(p2, fighterChoice);
 			}
 			checkSetup(start);
 		});
