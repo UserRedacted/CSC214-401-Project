@@ -165,13 +165,13 @@ public class GameDisplay extends Application {
 				});
 					
 				
-				Button playerInfo = new Button("View Player Information");
+				Button playerInfo = new Button("View Player BattleLogs");
 				playerInfo.setMaxWidth(buttonWidth);
 				soundPlayer.playOnHover(playerInfo);
 
 				playerInfo.setOnMouseClicked(e -> {
 					soundPlayer.playClick();
-					scene.setRoot(informationMenu());
+					scene.setRoot(battleLogMenu());
 				});
 				
 				
@@ -479,7 +479,7 @@ public class GameDisplay extends Application {
 	
 	
 	// Menu for users to view information on a specific user profile
-	public BorderPane informationMenu() {
+	public BorderPane battleLogMenu() {
 		
 		BorderPane frame = new BorderPane();
 		frame.setPadding(new Insets(20, 20, 20, 20));
@@ -491,6 +491,9 @@ public class GameDisplay extends Application {
 		
 		// Children of Content
 			
+			Text title = new Text("View User BattleLogs");
+			title.setFont(Font.loadFont(fixedsys, 48));
+
 			HBox userHBox = new HBox();
 			userHBox.setSpacing(20);
 			userHBox.setAlignment(Pos.CENTER);
@@ -501,7 +504,7 @@ public class GameDisplay extends Application {
 				userSelect.setFont(Font.loadFont(fixedsys, 32));
 	
 				ChoiceBox<User> users = new ChoiceBox<User>();
-				users.setMinWidth(200);
+				users.setMinWidth(400);
 
 				for(int i = 0; i < playerList.getUsers().size(); i++) {
 					if(playerList.getUsers().get(i).getLoggedIn().equals("true")) {
@@ -519,7 +522,7 @@ public class GameDisplay extends Application {
 				battleSelect.setFont(Font.loadFont(fixedsys, 32));
 
 				ChoiceBox<BattleLog> battleLogs = new ChoiceBox<BattleLog>();
-				battleLogs.setMinWidth(200);
+				battleLogs.setMinWidth(400);
 				
 				
 				
@@ -531,25 +534,6 @@ public class GameDisplay extends Application {
 		
 				ListView<String> battleLogText = new ListView<String>();
 				battleLogText.setMinWidth(700);
-				
-				VBox statistics = new VBox();
-				statistics.setSpacing(5);
-				
-				// Children of VBox statistics
-					Text header = new Text("Statistics:\n");
-					header.setFont(Font.loadFont(fixedsys, 32));
-	
-					Text username = new Text("Username: ");
-					username.setFont(Font.loadFont(fixedsys, 32));
-	
-					Text playedGames = new Text("Played Games: ");
-					playedGames.setFont(Font.loadFont(fixedsys, 32));
-	
-					Text wonGames = new Text("Won Games: ");
-					wonGames.setFont(Font.loadFont(fixedsys, 32));
-	
-					Text wlRatio = new Text("Win/Loss Ratio: ");
-					wlRatio.setFont(Font.loadFont(fixedsys, 32));
 
 			
 			
@@ -567,7 +551,6 @@ public class GameDisplay extends Application {
 		users.getSelectionModel().selectedItemProperty().addListener(e -> {
 			p1 = users.getSelectionModel().getSelectedItem();
 			
-			username.setText("Username: " + p1.getName());
 			
 			// Setting up the battle log choicebox
 			battleLogs.getItems().clear();
@@ -586,32 +569,28 @@ public class GameDisplay extends Application {
 			
 			// Setting up ListView
 			battleLogText.getItems().clear();
-			for(String turn: battle.getBattleTurns()) {
-				battleLogText.getItems().add(turn);
+			try {
+				for(String turn: battle.getBattleTurns()) {
+					battleLogText.getItems().add(turn);
+				}
+			} catch (NullPointerException n) {
+				// File does not need to be loaded or does not exist
 			}
+
 			
 		});
 		
 		
-			
 			
 		userHBox.getChildren().add(userSelect);
 		userHBox.getChildren().add(users);
 
 		battleHBox.getChildren().add(battleSelect);
 		battleHBox.getChildren().add(battleLogs);
-
-		
-		statistics.getChildren().add(header);
-		statistics.getChildren().add(username);
-		statistics.getChildren().add(playedGames);
-		statistics.getChildren().add(wonGames);
-		statistics.getChildren().add(wlRatio);
-		
 		
 		information.getChildren().add(battleLogText);
-		information.getChildren().add(statistics);
 		
+		content.getChildren().add(title);
 		content.getChildren().add(userHBox);
 		content.getChildren().add(battleHBox);
 		content.getChildren().add(information);
@@ -867,6 +846,13 @@ public class GameDisplay extends Application {
 			playerProfile.getItems().add(p);
 		}
 			
+		// Add custom users to the ChoiceBox
+		for(User u: playerList.getUsers()) {
+			if(u.getLoggedIn().equals("true")) {
+				playerProfile.getItems().add(u);
+			}
+		}
+		
 		// Displaying the details for the selected fighter in the playerVBox
 		Text fighterName = new Text("");
 		fighterName.setFont(Font.loadFont(fixedsys, 48));
@@ -967,9 +953,13 @@ public class GameDisplay extends Application {
 	// match is over
 	public HBox matchInterface() {
 		
+		
+		Button backToMenu = new Button("Back to Menu");
+		soundPlayer.playOnHover(backToMenu);
+		backToMenu.setMinWidth(250);
+	
 		Button advance = new Button("[C] Continue");
 		soundPlayer.playOnHover(advance);
-
 		advance.setMinWidth(250);
 		
 		if(battleFinished)
@@ -1054,11 +1044,28 @@ public class GameDisplay extends Application {
 			advanceRound(turnDisplay);	
 		});
 		
+		backToMenu.setOnMouseClicked(e -> {
+			// Changing to the main theme music
+			File song = new File("resources\\music\\Theme.wav");
+			Media theme = new Media(song.toURI().toString()); // Media class requires a URI file path. This allows it to work on any computer.
+			musicPlayer.stop();
+			musicPlayer = new MediaPlayer(theme);
+			musicPlayer.setCycleCount(1000);
+			musicPlayer.setVolume(musicVolume);
+			musicPlayer.play();
+			
+			soundPlayer.playClick2();
+			scene.setRoot(mainMenu());
+		});
+		
+		
+		
 		// Center VBox structure
 		display.getChildren().add(countdown);
 		display.getChildren().add(turnDisplay);
 		display.getChildren().add(battleLog);
 		display.getChildren().add(advance);
+		display.getChildren().add(backToMenu);
 		
 		// Root content structure
 		root.getChildren().add(p1c);

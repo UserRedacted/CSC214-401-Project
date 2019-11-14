@@ -20,6 +20,14 @@ public class BalanceTester {
 		p1.setOpponent(p2);
 		p2.setOpponent(p1);
 		
+		//testAll("Rocknald", 100000);
+		//testAll("Walbow", 100000);
+		//testAll("Blobert", 100000);
+		//testAll("Zen", 100000);
+		//testAll("Grubby", 100000);
+		//testAll("Boomer", 100000);
+		//testAll("Sir Fuzzy", 100000);
+		//testAll("Shifty", 100000);
 		testAll("Zoomer", 100000);
 
 

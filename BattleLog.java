@@ -76,7 +76,6 @@ public class BattleLog {
 	    
 		try (BufferedReader br = new BufferedReader(new FileReader(battleLog))) {
 
-            br.readLine();
 
             while ((line = br.readLine()) != null) {
 

@@ -69,26 +69,14 @@ public class PlayerList {
                 String[] playerDetails = line.split(",");
 
                 User temp = new User(decrypt(playerDetails[0]), decrypt(playerDetails[1]), decrypt(playerDetails[2]));
-                temp.loggedIn = decrypt(playerDetails[3]);
+                temp.setLoggedIn(decrypt(playerDetails[3]));
                 
                
                 
                 // Method for adding user profiles to the full list of playable users (public + private)
                 // and to the list of private user profiles
                 
-                boolean addToPlayers = true;
                 boolean addToUsers = true;
-                
-                if(temp.loggedIn.equals("false")) {
-                	addToPlayers = false;
-                } else {
-                    for(int i = 0; i < players.size(); i++) {
-                    	if(players.get(i).getName().equals(temp.getName())) {
-                    		addToPlayers = false;
-                    		players.set(i, temp);
-                    	}
-                    }
-                }
 
                 for(int i = 0; i < users.size(); i++) {
                 	if(users.get(i).getName().equals(temp.getName())) {
@@ -97,15 +85,6 @@ public class PlayerList {
                 	}
                 }
                 
-                if(addToPlayers) {
-                	players.add(temp);
-                } else {
-                	for(int i = 0; i < players.size(); i++) {
-                		if(players.get(i).getName().equals(temp.getName())) {
-                			players.remove(i);
-                		}
-                	}
-                }
                 if(addToUsers)
                 	users.add(temp);
                 

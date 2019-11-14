@@ -46,7 +46,7 @@ public class FighterList {
 		boomer.setSpriteHurt("resources\\sprites\\BoomerHurt.gif");
 		fighters.add(boomer);
 		
-		Fighter sirFuzzilot = new Fighter("Sir Fuzzy", 305, 70, 60, 110, 80);
+		Fighter sirFuzzilot = new Fighter("Cat Crusader", 305, 70, 60, 110, 80);
 		sirFuzzilot.setSpriteIdle("resources\\sprites\\SirFuzzilot.gif");
 		sirFuzzilot.setSpriteHurt("resources\\sprites\\SirFuzzilotHurt.gif");
 		fighters.add(sirFuzzilot);

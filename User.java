@@ -2,8 +2,8 @@ import java.io.File;
 
 public class User extends Player {
 
-	String password;
-	String loggedIn;
+	private String password;
+	private String loggedIn;
 	
 	
 	public User(String name) {
