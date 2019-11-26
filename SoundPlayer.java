@@ -1,3 +1,6 @@
+/**
+ * Responsible for playing sounds in the game
+ * */
 import java.io.File;
 
 import javafx.scene.control.Button;
@@ -7,8 +10,11 @@ import javafx.scene.media.MediaPlayer;
 public class SoundPlayer {
 
 	MediaPlayer soundPlayer;
-	
-	
+
+
+	/**
+	 * Constructor
+	 */
 	public SoundPlayer(){
 	}
 	
