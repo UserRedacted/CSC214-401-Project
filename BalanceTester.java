@@ -1,4 +1,6 @@
-
+/**
+ * Class that generates win/loss ratios for each of the various fighter matchups
+ * */
 public class BalanceTester {
 	
 	
