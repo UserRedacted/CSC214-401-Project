@@ -1,4 +1,6 @@
-
+/**
+ * Class that populates player profiles
+ * */
 public class Player {
 	
 	private boolean isHuman;
@@ -9,7 +11,10 @@ public class Player {
 	private int numBattles;
 	private BattleLog currentBattle = new BattleLog();
 	
-	
+	/**
+	 * Constructor for player profile
+	 * @param name of the profile
+	 * */
 	public Player(String name) {
 		this.name = name;
 		isHuman = true;
@@ -24,6 +29,7 @@ public class Player {
 	}
 
 	// Setters and Getters for private data fields
+
 	public boolean isHuman() {
 		return isHuman;
 	}

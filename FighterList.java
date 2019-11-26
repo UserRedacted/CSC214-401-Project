@@ -1,3 +1,7 @@
+/**
+ * Populate the list of available fighters for players to choose from
+ * */
+
 import java.util.ArrayList;
 
 public class FighterList {
@@ -8,10 +12,11 @@ public class FighterList {
 	public FighterList() {
 		loadFighters();
 	}
-	
-	
 
-	// Handles fighter setup and character list
+
+	/**
+	 * Handles fighter setup and character list
+	 */
 	public void loadFighters() {
 		
 		// Characters and stats for constructor go here
