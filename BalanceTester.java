@@ -10,7 +10,7 @@ public class BalanceTester {
 	
 	static int p1_won = 0; // numerical win rate for Fighter 1
 	static int p2_won = 0; // numerical win rate for Fighter 2
-	
+
 	public static void main(String[] args) {
 
 
@@ -34,7 +34,11 @@ public class BalanceTester {
 
 	}
 
-	// Tests one fighter against every other fighter
+	/**
+	 * Tests one fighter against every other fighter
+	 * @param fighter_name name of the fighter
+	 * @param numBattles number of battles to be tested
+	 */
 	private static void testAll(String fighter_name, int numBattles) {
 		System.out.println("_______________________________________");
 		for(int i = 0; i < fighters.getFighters().size(); i++) {
@@ -44,9 +48,14 @@ public class BalanceTester {
 		System.out.println("_______________________________________");
 
 	}
-	
-	
-	// Function for testing two given fighters
+
+
+	/**
+	 * Function for testing two given fighters
+	 * @param fighter1_name name of fighter 1
+	 * @param fighter2_name name of fighter 2
+	 * @param numBattles number of battles to test
+	 */
 	private static void test(String fighter1_name, String fighter2_name, int numBattles) {
 		p1_won = 0;
 		p2_won = 0;
@@ -70,16 +79,21 @@ public class BalanceTester {
 	
 	
 	// HELPER METHODS FOR TEST
-	
-	// Prints whether the fighter being tests won or lost a majority of their battles
-	// and displays the win-rate.
+
+	/**
+	 * 	Prints whether the fighter being tests won or lost a majority of their battles
+	 * 	and displays the win-rate.
+	 * @param numBattles number of battles to test
+	 */
 	private static void printResults(int numBattles) {
 		double percentWon;
 		percentWon = 100.0*p1_won/(p1_won+p2_won);
 		System.out.println("\t" + p1.getFighter().getName() + " wins " + p1_won + " / " +p2_won + " (" + percentWon + "%) of matches");
 	}
 
-	// One turn of combat, shortened and refined
+	/**
+	 * One turn of combat, shortened and refined
+	 */
 	private static void takeTurn() {
 		
 		p1.getFighter().setChosenAction(p1.makeDecision());
@@ -88,7 +102,12 @@ public class BalanceTester {
 		Fighter.compareAction(p1.getFighter(), p2.getFighter());
 	}
 
-	// Looks for fighters with a name the same as the strings sent as parameters
+
+	/**
+	 * Looks for fighters with a name the same as the strings sent as parameters
+	 * @param fighter1_name name of fighter 1
+	 * @param fighter2_name name of fighter 2
+	 */
 	private static void setFighters(String fighter1_name, String fighter2_name) {
 		for(int i = 0; i < fighters.getFighters().size(); i++) {
 			if(fighters.getFighters().get(i).getName().equals(fighter1_name)) {
