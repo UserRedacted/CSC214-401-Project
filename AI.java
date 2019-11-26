@@ -1,4 +1,6 @@
-
+/**
+ * Represents the Artificial Intelligence (AI) used to determine computer actions during gameplay
+ * */
 public class AI extends Player {
 
 	private int difficulty;
@@ -11,50 +13,86 @@ public class AI extends Player {
 	// percentage used to determine which move the AI prefers to use. MEDIUM AI ONLY
 	private int preferredBias;
 	private Player opponent;
-	
+
+	/**
+	 * Creates a new AI with the given name and difficulty
+	 * @param name AI name
+	 * @param difficulty AI difficulty
+	 * */
 	public AI(String name, int difficulty) {
 		super(name);
 		super.setHuman(false);
 		this.difficulty = difficulty;
 	}
 
-	
+
+	/**
+	 * Gets the difficulty of the AI
+	 * @return difficulty of the AI
+	 * */
 	public int getDifficulty() {
 		return difficulty;
 	}
-	
+
+	/**
+	 * Set the difficulty of the AI
+	 * */
 	public void setDifficulty(int difficulty) {
 		this.difficulty = difficulty;
 	}
-	
+
+	/**
+	 * Get the preferred move of the AI
+	 * @return preferred move of the AI
+	 * */
 	public int getPreferredMove() {
 		return preferredMove;
 	}
 
+	/**
+	 * Set the preferred move of the AI
+	 * */
 	public void setPreferredMove(int preferredMove) {
 		this.preferredMove = preferredMove;
 	}
 
+	/**
+	 * Get the preferred bias of the AI
+	 * @return preferred bias
+	 * */
 	public int getPreferredBias() {
 		return preferredBias;
 	}
 
+	/**
+	 * Set the preferred bias of the AI
+	 * */
 	public void setPreferredBias(int preferredBias) {
 		this.preferredBias = preferredBias;
 	}
 
+	/**
+	 * Get the opponent of the AI
+	 * @return oponnent
+	 * */
 	public Player getOpponent() {
 		return opponent;
 	}
 
+	/**
+	 * Set the opponnent of the AI
+	 * */
 	public void setOpponent(Player opponent) {
 		this.opponent = opponent;
 	}
 
 	
 
-	// Makes a decision based on AI difficulty
-	// Each difficulty has a unique thought process
+	/**
+	 * Makes a decision based on AI difficulty
+	 * Each difficulty has a unique thought process
+	 * @return decision made by the AI
+	 **/
 	public int makeDecision() {
 		opponentActions[front%5] = new Integer(opponent.getFighter().getChosenAction());
 		front++;
@@ -68,12 +106,18 @@ public class AI extends Player {
 	}
 
 	
-	//Stupid unpredictability
+	/**
+	 * Logic for normal difficulty AI, adds unpredictability
+	 * @return integer that determines decision
+	 * */
 	private int decideNormal() {
 		return (int)(Math.random()*4);
 	}
 
-	// Decision archetypes with room for unpredictability
+	/**
+	 * Logic for hard difficulty AI, adds unpredictability
+	 * @return integer that determines decision
+	 * */
 	private int decideHard() {
 		int favoriteAction = calculateFavoriteAction();
 		int choice = (int)(Math.random()*5);
@@ -94,7 +138,10 @@ public class AI extends Player {
 		
 	}
 
-	// Based on the opponent's last 5 actions, returns the most commonly used action
+	/**
+	 * Based on the opponent's last 5 actions, returns the most commonly used action
+	 * @return favorite action of the opponnent
+	 * */
 	private int calculateFavoriteAction() {
 		int favoriteAction = 0; // Integer equivalent of favorite action type
 		int[] numAction = {0, 0, 0, 0}; // The number of times a player has chosen each action, initialized to zero
@@ -113,13 +160,14 @@ public class AI extends Player {
 				quantityActionAtIndex = numAction[i];
 			}
 		}
-		
-
 
 		return favoriteAction;
 	}
 	
-	// Returns the option that deals the most damage if landed successfully
+	/**
+	 * Returns the option that deals the most damage if landed successfully
+	 * @return action that deals the most damage
+	 * */
 	private int strongestMove() {
 		Fighter f = new Fighter(this.getFighter());
 		// List of numerical moves 
@@ -134,18 +182,27 @@ public class AI extends Player {
 		return strongestAction;
 	}
 
-	// Returns whatever move the opponent selected previously
+	/**
+	 * Returns whatever move the opponent selected previously
+	 * @return previous action
+	 * */
 	private int mimicLast() {
 		int action = opponent.getFighter().getChosenAction();
 		return action;
 	}
 
-	// Counters the opponent's most commonly used action
+	/**
+	 * Counters the opponent's most commonly used action
+	 * @return counter to opponent action
+	 * */
 	private int counterFavorite(int favoriteAction) {
 		return (favoriteAction + 2) % 4;
 	}
 	
-	// Counters whatever move the opponent selected previously
+	/**
+	 * Counters whatever move the opponent selected previously
+	 * @return counter to last opponent move
+	 * */
 	private int counterLast() {
 		int action = opponent.getFighter().getChosenAction();
 		// The below equation selects the direct counter to the move selected
